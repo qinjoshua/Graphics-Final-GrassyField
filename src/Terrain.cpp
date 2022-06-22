@@ -1,7 +1,10 @@
 #include "Terrain.hpp"
+#include "Constants.hpp"
 #include "Image.hpp"
 
 #include <iostream>
+#include <math.h>
+#include <PerlinNoise/PerlinNoise.hpp>
 
 // Constructor for our object
 // Calls the initialization method
@@ -25,12 +28,13 @@ Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
     // we just grab one of the color components.
 
     // TODO: (Inclass) Implement populate heightData!
-    for (unsigned int z = 0; z < m_zSegments; z++) {
-        for (unsigned int x = 0; x < m_xSegments; x++) {
-            m_heightData[x + z * m_zSegments] = (float)heightMap.GetPixelR(z, x) / scale;
+    for(unsigned int z=0; z < m_zSegments; ++z){
+        for(unsigned int x=0; x < m_xSegments; ++x){
+            m_heightData[x+z*m_xSegments] = (float)heightMap.GetPixelR(z,x)/scale;
         }
     }
 
+    // Initialize the terrain
     Init();
 }
 
@@ -50,13 +54,13 @@ Terrain::~Terrain(){
 void Terrain::Init(){
     // Create the initial grid of vertices.
 
-    // TODO: (Inclass) Build grid of vertices! 
-    for (unsigned int z = 0; z < m_zSegments; z++) {
-        for (unsigned int x = 0; x < m_zSegments; x++) {
-            float u = 1.0f - ((float)x / (float)m_xSegments);
-            float v = 1.0f - ((float)z / (float)m_zSegments);
-
-            m_geometry.AddVertex(x, m_heightData[x + z * m_xSegments], z, u, v);
+    // Build grid of vertices! 
+    for(unsigned int z=0; z < m_zSegments; ++z){
+        for(unsigned int x =0; x < m_xSegments; ++x){
+            float u = 1.0f - ((float)x/(float)m_xSegments);
+            float v = 1.0f - ((float)z/(float)m_zSegments);
+            // Calculate the correct position and add the texture coordinates
+            m_geometry.AddVertex(x,m_heightData[x+z*m_xSegments],z,u,v);
         }
     }
     
@@ -64,18 +68,19 @@ void Terrain::Init(){
     // By writing out a few of the indicies you can figure out
     // the pattern here. Note there is an offset.
     
-    // TODO: (Inclass) Build triangle strip
-    for (unsigned int z = 0; z < m_zSegments - 1; z++) {
-        for (unsigned int x = 0; x < m_xSegments - 1; x++) {
-            m_geometry.AddIndex(x + (z * m_zSegments));
-            m_geometry.AddIndex(x + (z * m_zSegments) + m_xSegments);
-            m_geometry.AddIndex(x + (z * m_zSegments + 1));
+    // Build triangle strip
+    for(unsigned int z=0; z < m_zSegments-1; ++z){
+        for(unsigned int x =0; x < m_xSegments-1; ++x){
+            m_geometry.AddIndex(x+(z*m_zSegments));
+            m_geometry.AddIndex(x+(z*m_zSegments)+m_xSegments);
+            m_geometry.AddIndex(x+(z*m_zSegments+1));
 
-            m_geometry.AddIndex(x + (z * m_zSegments + 1));
-            m_geometry.AddIndex(x + (z * m_zSegments) + m_xSegments);
-            m_geometry.AddIndex(x + (z * m_zSegments) + m_xSegments + 1);
+            m_geometry.AddIndex(x+(z*m_zSegments)+1);
+            m_geometry.AddIndex(x+(z*m_zSegments)+m_xSegments);
+            m_geometry.AddIndex(x+(z*m_zSegments)+m_xSegments+1);
         }
     }
+
 
    // Finally generate a simple 'array of bytes' that contains
    // everything for our buffer to work with.
@@ -87,7 +92,41 @@ void Terrain::Init(){
                                         m_geometry.GetIndicesDataPtr());
 }
 
+
+
 // Loads an image and uses it to set the heights of the terrain.
 void Terrain::LoadHeightMap(Image image){
 
+}
+
+void Terrain::LoadTextures(std::string colormap, std::string detailmap){ 
+        // Load our actual textures
+        m_textureDiffuse.LoadTexture(colormap); // Found in object
+        m_detailMap.LoadTexture(detailmap);     // Found in object
+}
+
+// Code inspired by this handy demonstration:
+// https://www.youtube.com/watch?v=U9q-jM3-Phc&t=9s&ab_channel=SimonDev
+float ComputeHeight(int x, int y) {
+    const siv::PerlinNoise::seed_type seed = TERRAIN_SEED;
+    const siv::PerlinNoise perlin{ seed };
+
+    const float xs = x / TERRAIN_SCALE;
+    const float ys = y / TERRAIN_SCALE;
+    const float G = 2.0 * (-TERRAIN_PERSISTENCE);
+
+    float amplitude = 1.0f;
+    float frequency = 1.0f;
+    float normalization = 0.0f;
+    float total = 0.0f;
+
+    for (int o = 0; o < TERRAIN_OCTAVES; o++) {
+        const double noise = perlin.octave2D_01((xs * frequency), (ys * frequency), 4);
+        total += noise * amplitude;
+        amplitude *= G;
+        frequency *= TERRAIN_LACUNARITY;
+    }
+
+    total /= normalization;
+    return pow(total, TERRAIN_EXPONENTIATION) * TERRAIN_HEIGHT;
 }

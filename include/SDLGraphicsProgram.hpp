@@ -23,9 +23,8 @@
     #include <SDL.h>
 #endif
 
-// Include the 'Renderer.hpp' which deteremines what
-// the graphics API is going to be for OpenGL
-#include "Renderer.hpp"
+// C++ Libraries
+#include <functional>
 
 
 // Purpose:
@@ -35,15 +34,12 @@
 //
 class SDLGraphicsProgram{
 public:
-
     // Constructor
     SDLGraphicsProgram(int w, int h);
-    // Desctructor
+    // Destructor
     ~SDLGraphicsProgram();
-    // Setup OpenGL
-    bool InitGL();
     // Loop that runs forever
-    void Loop();
+    void SetLoopCallback(std::function<void(void)> callback);
     // Get Pointer to Window
     SDL_Window* GetSDLWindow();
     // Helper Function to Query OpenGL information.
@@ -52,11 +48,14 @@ public:
 private:
 	// The Renderer responsible for drawing objects
 	// in OpenGL (Or whatever Renderer you choose!)
-	Renderer* m_renderer;
     // The window we'll be rendering to
     SDL_Window* m_window ;
     // OpenGL context
     SDL_GLContext m_openGLContext;
+    // Window width and height
+    unsigned int m_width;
+    unsigned int m_height;
+
 };
 
 #endif

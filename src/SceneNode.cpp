@@ -4,28 +4,29 @@
 #include <iostream>
 
 // The constructor
-SceneNode::SceneNode(Object* ob){
+SceneNode::SceneNode(std::shared_ptr<Object> ob, std::string vertShader, std::string fragShader){
 	std::cout << "(SceneNode.cpp) Constructor called\n";
 	m_object = ob;
-	// By default, we do not know the parent
-	// at the time of construction of this node.
-	// If the SceneNode is the root of the tree,
-	// then there is no parent.
-	m_parent = nullptr;
+
+    // By default no parent.
+    m_parent = nullptr;
 	
+    // Create shader
+    m_shader = std::make_shared<Shader>();
 	// Setup shaders for the node.
-	std::string vertexShader = m_shader.LoadShader("./shaders/vert.glsl");
-	std::string fragmentShader = m_shader.LoadShader("./shaders/frag.glsl");
+	std::string vertexShader   = m_shader->LoadShader(vertShader);
+	std::string fragmentShader = m_shader->LoadShader(fragShader);
+
 	// Actually create our shader
-	m_shader.CreateShader(vertexShader,fragmentShader);       
+	m_shader->CreateShader(vertexShader,fragmentShader);       
 }
 
 // The destructor 
 SceneNode::~SceneNode(){
-	// Remove each object
-	for(unsigned int i =0; i < m_children.size(); ++i){
-		delete m_children[i];
-	}
+    // Remove all of the children
+    for(int i=0; i < m_children.size(); i++){
+        delete m_children[i];
+    }
 }
 
 // Adds a child node to our current node.
@@ -45,7 +46,7 @@ void SceneNode::AddChild(SceneNode* n){
 // the objects draw method.
 void SceneNode::Draw(){
 	// Bind the shader for this node or series of nodes
-	m_shader.Bind();
+	m_shader->Bind();
 	// Render our object
 	if(m_object!=nullptr){
 		// Render our object
@@ -65,27 +66,49 @@ void SceneNode::Update(glm::mat4 projectionMatrix, Camera* camera){
     if(m_object!=nullptr){
         // TODO: Implement here!
     
+        m_object->Bind();
     	// Now apply our shader 
-		m_shader.Bind();
+		m_shader->Bind();
     	// Set the uniforms in our current shader
 
         // For our object, we apply the texture in the following way
         // Note that we set the value to 0, because we have bound
         // our texture to slot 0.
-        m_shader.SetUniform1i("u_DiffuseMap",0);  
+        m_shader->SetUniform1i("u_DiffuseMap",0);  
+        // TODO: This assumes every SceneNode is a 'Terrain' so this shader setup code
+        //       needs to be moved preferably to 'Object' or 'Terrain'
+        m_shader->SetUniform1i("u_DetailMap",1);  
         // Set the MVP Matrix for our object
         // Send it into our shader
-        m_shader.SetUniformMatrix4fv("model", &m_worldTransform.GetInternalMatrix()[0][0]);
-        m_shader.SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
-        m_shader.SetUniformMatrix4fv("projection", &projectionMatrix[0][0]);
+        m_shader->SetUniformMatrix4fv("model", &m_worldTransform.GetInternalMatrix()[0][0]);
+        m_shader->SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
+        m_shader->SetUniformMatrix4fv("projection", &projectionMatrix[0][0]);
 
         // Create a 'light'
-        m_shader.SetUniform3f("lightColor",1.0f,1.0f,1.0f);
-        m_shader.SetUniform3f("lightPos",
-                               camera->GetEyeXPosition() + camera->GetViewXDirection(),
-                               camera->GetEyeYPosition() + camera->GetViewYDirection(),
-                               camera->GetEyeZPosition() + camera->GetViewZDirection());
-        m_shader.SetUniform1f("ambientIntensity",0.5f);
+        // Create a first 'light'
+        m_shader->SetUniform3f("pointLights[0].lightColor",1.0f,1.0f,1.0f);
+        m_shader->SetUniform3f("pointLights[0].lightPos",
+           camera->GetEyeXPosition() + camera->GetViewXDirection(),
+           camera->GetEyeYPosition() + camera->GetViewYDirection(),
+           camera->GetEyeZPosition() + camera->GetViewZDirection());
+        m_shader->SetUniform1f("pointLights[0].ambientIntensity",0.9f);
+        m_shader->SetUniform1f("pointLights[0].specularStrength",0.5f);
+        m_shader->SetUniform1f("pointLights[0].constant",1.0f);
+        m_shader->SetUniform1f("pointLights[0].linear",0.003f);
+        m_shader->SetUniform1f("pointLights[0].quadratic",0.0f);
+		
+		// Create a second light
+        m_shader->SetUniform3f("pointLights[1].lightColor",1.0f,0.0f,0.0f);
+        m_shader->SetUniform3f("pointLights[1].lightPos",
+           camera->GetEyeXPosition() + camera->GetViewXDirection(),
+           camera->GetEyeYPosition() + camera->GetViewYDirection(),
+           camera->GetEyeZPosition() + camera->GetViewZDirection());
+        m_shader->SetUniform1f("pointLights[1].ambientIntensity",0.9f);
+        m_shader->SetUniform1f("pointLights[1].specularStrength",0.5f);
+        m_shader->SetUniform1f("pointLights[1].constant",1.0f);
+        m_shader->SetUniform1f("pointLights[1].linear",0.09f);
+        m_shader->SetUniform1f("pointLights[1].quadratic",0.032f);
+
 	
 		// Iterate through all of the children
 		for(int i =0; i < m_children.size(); ++i){

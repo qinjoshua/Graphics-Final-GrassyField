@@ -1,6 +1,9 @@
 #include "SDLGraphicsProgram.hpp"
 #include "Camera.hpp"
 #include "Terrain.hpp"
+// Include the 'Renderer.hpp' which deteremines what
+// the graphics API is going to be for OpenGL
+#include "Renderer.hpp"
 
 #include <iostream>
 #include <string>
@@ -11,86 +14,62 @@
 // Returns a true or false value based on successful completion of setup.
 // Takes in dimensions of window.
 SDLGraphicsProgram::SDLGraphicsProgram(int w, int h){
-	// Initialization flag
-	bool success = true;
-	// String to hold any errors that occur.
-	std::stringstream errorStream;
 	// The window we'll be rendering to
 	m_window = NULL;
 
+    m_width = w;
+    m_height = h;
+
 	// Initialize SDL
 	if(SDL_Init(SDL_INIT_VIDEO)< 0){
-		errorStream << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
-		success = false;
+		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
+        exit(EXIT_FAILURE);
 	}
-	else{
-		//Use OpenGL 3.3 core
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-		// We want to request a double buffer for smooth updating.
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    //Use OpenGL 3.3 core
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+    // We want to request a double buffer for smooth updating.
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-		//Create window
-		m_window = SDL_CreateWindow( "Lab",
-                                SDL_WINDOWPOS_UNDEFINED,
-                                SDL_WINDOWPOS_UNDEFINED,
-                                w,
-                                h,
-                                SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+    //Create window
+    m_window = SDL_CreateWindow( "Lab",
+                            SDL_WINDOWPOS_UNDEFINED,
+                            SDL_WINDOWPOS_UNDEFINED,
+                            m_width,
+                            m_height,
+                            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 
-		// Check if Window did not create.
-		if( m_window == NULL ){
-			errorStream << "Window could not be created! SDL Error: " << SDL_GetError() << "\n";
-			success = false;
-		}
-
-		//Create an OpenGL Graphics Context
-		m_openGLContext = SDL_GL_CreateContext( m_window );
-		if( m_openGLContext == NULL){
-			errorStream << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << "\n";
-			success = false;
-		}
-
-		// Initialize GLAD Library
-		if(!gladLoadGLLoader(SDL_GL_GetProcAddress)){
-			errorStream << "Failed to iniitalize GLAD\n";
-			success = false;
-		}
-
-		//Initialize OpenGL
-		if(!InitGL()){
-			errorStream << "Unable to initialize OpenGL!\n";
-			success = false;
-		}
-  	}
-
-    // If initialization did not work, then print out a list of errors in the constructor.
-    if(!success){
-        errorStream << "SDLGraphicsProgram::SDLGraphicsProgram - Failed to initialize!\n";
-        std::string errors=errorStream.str();
-        SDL_Log("%s\n",errors.c_str());
-    }else{
-        SDL_Log("SDLGraphicsProgram::SDLGraphicsProgram - No SDL, GLAD, or OpenGL, errors detected during initialization\n\n");
+    // Check if Window did not create.
+    if( m_window == NULL ){
+        std::cerr << "Window could not be created! SDL Error: " << SDL_GetError() << "\n";
+        exit(EXIT_FAILURE);
     }
+
+    //Create an OpenGL Graphics Context
+    m_openGLContext = SDL_GL_CreateContext( m_window );
+    if( m_openGLContext == NULL){
+        std::cerr << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << "\n";
+        exit(EXIT_FAILURE);
+    }
+
+    // Initialize GLAD Library
+    if(!gladLoadGLLoader(SDL_GL_GetProcAddress)){
+        std::cerr << "Failed to iniitalize GLAD\n";
+        exit(EXIT_FAILURE);
+    }
+
+    // If initialization succeeds then print out a list of errors in the constructor.
+    SDL_Log("SDLGraphicsProgram::SDLGraphicsProgram - No SDL, GLAD, or OpenGL errors detected during initialization\n\n");
 
 	// SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN); // Uncomment to enable extra debug support!
 	GetOpenGLVersionInfo();
-
-
-    // Setup our Renderer
-    m_renderer = new Renderer(w,h);    
 }
 
 
 // Proper shutdown of SDL and destroy initialized objects
 SDLGraphicsProgram::~SDLGraphicsProgram(){
-    if(m_renderer!=nullptr){
-        delete m_renderer;
-    }
-
-
     //Destroy window
 	SDL_DestroyWindow( m_window );
 	// Point m_window to NULL to ensure it points to nothing.
@@ -100,31 +79,25 @@ SDLGraphicsProgram::~SDLGraphicsProgram(){
 }
 
 
-// Initialize OpenGL
-// Setup any of our shaders here.
-bool SDLGraphicsProgram::InitGL(){
-	//Success flag
-	bool success = true;
-
-	return success;
-}
-
-
-
 //Loops forever!
-void SDLGraphicsProgram::Loop(){
+void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
+    
+    // Create a renderer
+    std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(m_width,m_height);    
+
     // Create our terrain
-    Terrain* myTerrain = new Terrain(512,512,"./assets/terrain2.ppm");
-    myTerrain->LoadTexture("./assets/colormap.ppm");
+    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(512,512,"./assets/textures/terrain2.ppm");
+    myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
+
     // Create a node for our terrain 
-    SceneNode* terrainNode;
-    terrainNode = new SceneNode(myTerrain);
+    std::shared_ptr<SceneNode> terrainNode;
+    terrainNode = std::make_shared<SceneNode>(myTerrain,"./shaders/vert.glsl","./shaders/frag.glsl");
+
     // Set our SceneTree up
-    m_renderer->setRoot(terrainNode);
+    renderer->setRoot(terrainNode);
 
     // Set a default position for our camera
-    m_renderer->GetCamera(0)->SetCameraEyePosition(125.0f,50.0f,500.0f);
-
+    renderer->GetCamera(0)->SetCameraEyePosition(125.0f,50.0f,500.0f);
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
     bool quit = false;
@@ -137,13 +110,21 @@ void SDLGraphicsProgram::Loop(){
     // Set the camera speed for how fast we move.
     float cameraSpeed = 5.0f;
 
+    // Center our mouse
+    SDL_WarpMouseInWindow(m_window,m_width/2,m_height/2);
+
+    // Get a pointer to the keyboard state
+    const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
+
+
     // While application is running
     while(!quit){
-
         // For our terrain setup the identity transform each frame
-        // TODO maybe move this
+        // By default set the terrain node to the identity
+        // matrix.
         terrainNode->GetLocalTransform().LoadIdentity();
-
+        // Invoke(i.e. call) the callback function
+        callback();
 
         //Handle events on queue
         while(SDL_PollEvent( &e ) != 0){
@@ -157,39 +138,35 @@ void SDLGraphicsProgram::Loop(){
                 // Handle mouse movements
                 int mouseX = e.motion.x;
                 int mouseY = e.motion.y;
-//              m_renderer->camera->mouseLook(mouseX, mouseY);
-            }
-            switch(e.type){
-                // Handle keyboard presses
-                case SDL_KEYDOWN:
-                    switch(e.key.keysym.sym){
-                        case SDLK_LEFT:
-                            m_renderer->GetCamera(0)->MoveLeft(cameraSpeed);
-                            break;
-                        case SDLK_RIGHT:
-                            m_renderer->GetCamera(0)->MoveRight(cameraSpeed);
-                            break;
-                        case SDLK_UP:
-                            m_renderer->GetCamera(0)->MoveForward(cameraSpeed);
-                            break;
-                        case SDLK_DOWN:
-                            m_renderer->GetCamera(0)->MoveBackward(cameraSpeed);
-                            break;
-                        case SDLK_RSHIFT:
-                            m_renderer->GetCamera(0)->MoveUp(cameraSpeed);
-                            break;
-                        case SDLK_RCTRL:
-                            m_renderer->GetCamera(0)->MoveDown(cameraSpeed);
-                            break;
-                    }
-                break;
+                renderer->GetCamera(0)->MouseLook(mouseX, mouseY);
             }
         } // End SDL_PollEvent loop.
+
+        // Move left or right
+        if(keyboardState[SDL_SCANCODE_LEFT]){
+            renderer->GetCamera(0)->MoveLeft(cameraSpeed);
+        }else if(keyboardState[SDL_SCANCODE_RIGHT]){
+            renderer->GetCamera(0)->MoveRight(cameraSpeed);
+        }
+
+        // Move forward or back
+        if(keyboardState[SDL_SCANCODE_UP]){
+            renderer->GetCamera(0)->MoveForward(cameraSpeed);
+        }else if(keyboardState[SDL_SCANCODE_DOWN]){
+            renderer->GetCamera(0)->MoveBackward(cameraSpeed);
+        }
+
+        // Move up or down
+        if(keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT])   {
+            renderer->GetCamera(0)->MoveUp(cameraSpeed);
+        }else if(keyboardState[SDL_SCANCODE_LCTRL] || keyboardState[SDL_SCANCODE_RCTRL]){
+            renderer->GetCamera(0)->MoveDown(cameraSpeed);
+        }
 		
         // Update our scene through our renderer
-        m_renderer->Update();
+        renderer->Update();
         // Render our scene using our selected renderer
-        m_renderer->Render();
+        renderer->Render();
         // Delay to slow things down just a bit!
         SDL_Delay(25);  // TODO: You can change this or implement a frame
                         // independent movement method if you like.

@@ -29,6 +29,8 @@ public:
     // Loads a heightmap based on a PPM image
     // This then sets the heights of the terrain.
     void LoadHeightMap(Image image);
+    // Load textures
+    void LoadTextures(std::string colormap, std::string detailmap);
 
 private:
     // data
@@ -38,9 +40,8 @@ private:
     // Store the height in a multidimensional array
     int* m_heightData;
 
-    // Textures for the terrain
-    // Terrains are often 'multitextured' and have multiple textures.
-    std::vector<Texture> m_textures;
+    // Computes the height of a given x and y coordinate
+    float ComputeHeight(int x, int y);
 };
 
 #endif

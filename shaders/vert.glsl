@@ -22,7 +22,6 @@ out vec3 FragPos;
 // If we have texture coordinates we can now use this as well
 out vec2 v_texCoord;
 
-
 void main()
 {
 

@@ -12,6 +12,7 @@
  */
 
 #include <vector>
+#include <memory>
 
 #include "Object.hpp"
 #include "Transform.hpp"
@@ -25,7 +26,9 @@ class SceneNode{
 public:
     // A SceneNode is created by taking
     // a pointer to an object.
-    SceneNode(Object* ob);
+    // For now, we also specify the shader paths as well (TODO: Implement a shader manager here
+    //                                                          instead for a cleaner code..
+    SceneNode(std::shared_ptr<Object> ob, std::string vertShader, std::string fragShader);
     // Our destructor takes care of destroying
     // all of the children within the node.
     // Now we do not have to manage deleting
@@ -43,8 +46,7 @@ public:
     // Returns a SceneNode's world transform
     Transform& GetWorldTransform();
     // For now we have one shader per Node.
-    Shader m_shader;
-    
+    std::shared_ptr<Shader> m_shader; 
     
     // NOTE: Protected members are accessible by anything
     // that we inherit from, as well as ?
@@ -57,7 +59,7 @@ private:
     // we do not want to hold or make actual copies.
     std::vector<SceneNode*> m_children;
     // The object stored in the scene graph
-    Object* m_object;
+    std::shared_ptr<Object> m_object;
     // Each SceneNode nodes locals transform.
     Transform m_localTransform;
     // We additionally can store the world transform

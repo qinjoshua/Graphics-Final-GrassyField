@@ -19,9 +19,14 @@
 #include <glad/glad.h>
 
 #include <vector>
+#include <memory>
+
+// Forward declarations
 
 #include "SceneNode.hpp"
 #include "Camera.hpp"
+#include "Framebuffer.hpp"
+
 
 class Renderer{
 public:
@@ -36,7 +41,7 @@ public:
     void Render();
     // Sets the root of our renderer to some node to
     // draw an entire scene graph
-    void setRoot(SceneNode* startingNode);
+    void setRoot(std::shared_ptr<SceneNode> startingNode);
     // Returns the camera at an index
     Camera*& GetCamera(unsigned int index){
         if(index > m_cameras.size()-1){
@@ -47,12 +52,14 @@ public:
 
 // TODO: maybe write getter/setter methods
 protected:
+    // Root scene node
+    std::shared_ptr<SceneNode> m_root;
     // One or more cameras camera per Renderer
     std::vector<Camera*> m_cameras;
-    // Root scene node
-    SceneNode* m_root;
     // Store the projection matrix for our camera.
     glm::mat4 m_projectionMatrix;
+    // A renderer can have any number of framebuffers
+    std::vector<Framebuffer*> m_framebuffers;
 
 private:
     // Screen dimension constants

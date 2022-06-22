@@ -63,6 +63,8 @@ void Object::Bind(){
         m_vertexBufferLayout.Bind();
         // Diffuse map is 0 by default, but it is good to set it explicitly
         m_textureDiffuse.Bind(0);
+        // Detail map
+//        m_detailMap.Bind(1); // NOTE: Not yet supported
 }
 
 // Render our geometry

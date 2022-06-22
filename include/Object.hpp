@@ -14,7 +14,7 @@
 #include <vector>
 #include <string>
 
-#include "Shader.hpp"
+// Forward declarations
 #include "VertexBufferLayout.hpp"
 #include "Texture.hpp"
 #include "Transform.hpp"
@@ -39,17 +39,18 @@ public:
     void MakeTexturedQuad(std::string fileName);
     // How to draw the object
     virtual void Render();
-protected: // Classes that inherit from Object are intended to be overriden.
-
 	// Helper method for when we are ready to draw or update our object
 	void Bind();
+protected: // Classes that inherit from Object are intended to be overriden.
+
     // For now we have one buffer per object.
     VertexBufferLayout m_vertexBufferLayout;
-    // For now we have one diffuse map and one normal map per object
+    // For now we have one diffuse map
     Texture m_textureDiffuse;
+    // Terrains are often 'multitextured' and have multiple textures.
+    Texture m_detailMap; // NOTE: Note yet supported
     // Store the objects Geometry
 	Geometry m_geometry;
 };
-
 
 #endif
