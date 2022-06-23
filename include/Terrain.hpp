@@ -28,7 +28,7 @@ public:
     void Init();
     // Loads a heightmap based on a PPM image
     // This then sets the heights of the terrain.
-    void LoadHeightMap(Image image);
+    void LoadHeightMap();
     // Load textures
     void LoadTextures(std::string colormap, std::string detailmap);
 

@@ -27,12 +27,15 @@ Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
     // Because the R,G,B will all be equal in a grayscale iamge, then
     // we just grab one of the color components.
 
-    // TODO: (Inclass) Implement populate heightData!
-    for(unsigned int z=0; z < m_zSegments; ++z){
-        for(unsigned int x=0; x < m_xSegments; ++x){
-            m_heightData[x+z*m_xSegments] = (float)heightMap.GetPixelR(z,x)/scale;
+    // populate heightData
+    /*for (unsigned int z = 0; z < m_zSegments; ++z) {
+        for (unsigned int x = 0; x < m_xSegments; ++x) {
+            m_heightData[x + z * m_xSegments] = (float)heightMap.GetPixelR(z, x) / scale;
+            std::cout << m_heightData[x + z * m_xSegments] << "\n";
         }
-    }
+    }*/
+
+    LoadHeightMap();
 
     // Initialize the terrain
     Init();
@@ -94,9 +97,15 @@ void Terrain::Init(){
 
 
 
-// Loads an image and uses it to set the heights of the terrain.
-void Terrain::LoadHeightMap(Image image){
-
+// Builds the heights of the terrain from perlin noise
+void Terrain::LoadHeightMap(){
+    // populate heightData
+    for (unsigned int z = 0; z < m_zSegments; ++z) {
+        for (unsigned int x = 0; x < m_xSegments; ++x) {
+            m_heightData[x + z * m_xSegments] = ComputeHeight(x, z);
+            //std::cout << m_heightData[x + z * m_xSegments] << "\n";
+        }
+    }
 }
 
 void Terrain::LoadTextures(std::string colormap, std::string detailmap){ 
@@ -107,7 +116,7 @@ void Terrain::LoadTextures(std::string colormap, std::string detailmap){
 
 // Code inspired by this handy demonstration:
 // https://www.youtube.com/watch?v=U9q-jM3-Phc&t=9s&ab_channel=SimonDev
-float ComputeHeight(int x, int y) {
+float Terrain::ComputeHeight(int x, int y) {
     const siv::PerlinNoise::seed_type seed = TERRAIN_SEED;
     const siv::PerlinNoise perlin{ seed };
 
@@ -123,6 +132,7 @@ float ComputeHeight(int x, int y) {
     for (int o = 0; o < TERRAIN_OCTAVES; o++) {
         const double noise = perlin.octave2D_01((xs * frequency), (ys * frequency), 4);
         total += noise * amplitude;
+        normalization += amplitude;
         amplitude *= G;
         frequency *= TERRAIN_LACUNARITY;
     }

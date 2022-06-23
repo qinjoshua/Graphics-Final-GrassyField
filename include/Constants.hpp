@@ -10,11 +10,11 @@
 #include <stdint.h>
 
 static const uint8_t TERRAIN_SEED = 123456u;
-static const float TERRAIN_SCALE = 375;
+static const float TERRAIN_SCALE = 200;
 static const float TERRAIN_PERSISTENCE = 0.5;
 static const float TERRAIN_OCTAVES = 1.0;
 static const float TERRAIN_LACUNARITY = 2.0;
-static const float TERRAIN_EXPONENTIATION = 3.7;
-static const float TERRAIN_HEIGHT = 64;
+static const float TERRAIN_EXPONENTIATION = 2.7;
+static const float TERRAIN_HEIGHT = 100;
 
 #endif
