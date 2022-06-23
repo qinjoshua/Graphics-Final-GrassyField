@@ -1,5 +1,8 @@
 # Annoying macOS Finder stuff that sneaks its way into repositories
-.DS_Store
+**/.DS_Store
+
+## Binaries
+**/lab
 
 # Prerequisites
 *.d
@@ -33,3 +36,6 @@
 *.exe
 *.out
 *.app
+
+## Idea files
+**/.idea
