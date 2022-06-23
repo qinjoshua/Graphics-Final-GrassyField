@@ -93,6 +93,8 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     std::shared_ptr<SceneNode> terrainNode;
     terrainNode = std::make_shared<SceneNode>(myTerrain,"./shaders/vert.glsl","./shaders/frag.glsl");
 
+
+
     // Set our SceneTree up
     renderer->setRoot(terrainNode);
 
@@ -163,6 +165,11 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
             renderer->GetCamera(0)->MoveDown(cameraSpeed);
         }
 		
+        //std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
+
+        // Update the terrain based on the camera location
+        myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
+
         // Update our scene through our renderer
         renderer->Update();
         // Render our scene using our selected renderer

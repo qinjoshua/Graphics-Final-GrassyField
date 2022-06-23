@@ -19,9 +19,7 @@ Geometry::~Geometry(){
 // Adds a vertex and associated texture coordinate.
 // Will also add a and a normal
 void Geometry::AddVertex(float x, float y, float z, float s, float t){
-	m_vertexPositions.push_back(x);
-	m_vertexPositions.push_back(y);
-	m_vertexPositions.push_back(z);
+	Geometry::AddVertex(x, y, z);
     // Add texture coordinates
 	m_textureCoords.push_back(s);
 	m_textureCoords.push_back(t);
@@ -38,6 +36,14 @@ void Geometry::AddVertex(float x, float y, float z, float s, float t){
 	m_biTangents.push_back(0.0f);
 	m_biTangents.push_back(1.0f);
 }
+
+// Adds just a vertex
+void Geometry::AddVertex(float x, float y, float z) {
+	m_vertexPositions.push_back(x);
+	m_vertexPositions.push_back(y);
+	m_vertexPositions.push_back(z);
+}
+
 
 // Allows for adding one index at a time manually if 
 // you know which vertices are needed to make a triangle.

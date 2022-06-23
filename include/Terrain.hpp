@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <string>
+#include <PerlinNoise/PerlinNoise.hpp>
 
 class Terrain : public Object {
 public:
@@ -32,16 +33,25 @@ public:
     // Load textures
     void LoadTextures(std::string colormap, std::string detailmap);
 
+    // Moves the position of the camera to the given location
+    void MoveCamera(int x, int y);
+
 private:
     // data
     unsigned int m_xSegments;
     unsigned int m_zSegments;
 
+    int m_xOffset = 0;
+    int m_zOffset = 0;
+
     // Store the height in a multidimensional array
-    int* m_heightData;
+    float* m_heightData;
 
     // Computes the height of a given x and y coordinate
     float ComputeHeight(int x, int y);
+
+    const siv::PerlinNoise::seed_type seed = 123456u;
+    const siv::PerlinNoise perlin{ seed };
 };
 
 #endif

@@ -28,6 +28,7 @@ public:
 	float* GetBufferDataPtr();
 	// Add a new vertex 
 	void AddVertex(float x, float y, float z, float s, float t);
+	void AddVertex(float x, float y, float z);
 	// Allows for adding one index at a time manually if 
 	// you know which vertices are needed to make a triangle.
 	void AddIndex(unsigned int i);

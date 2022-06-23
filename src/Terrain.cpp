@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <math.h>
-#include <PerlinNoise/PerlinNoise.hpp>
 
 // Constructor for our object
 // Calls the initialization method
@@ -22,18 +21,10 @@ Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
     float scale = 5.0f; // Note that this scales down the values to make
                         // the image a bit more flat.
     // Create height data
-    m_heightData = new int[m_xSegments*m_zSegments];
+    m_heightData = new float[m_xSegments*m_zSegments];
     // Set the height data equal to the grayscale value of the heightmap
     // Because the R,G,B will all be equal in a grayscale iamge, then
     // we just grab one of the color components.
-
-    // populate heightData
-    /*for (unsigned int z = 0; z < m_zSegments; ++z) {
-        for (unsigned int x = 0; x < m_xSegments; ++x) {
-            m_heightData[x + z * m_xSegments] = (float)heightMap.GetPixelR(z, x) / scale;
-            std::cout << m_heightData[x + z * m_xSegments] << "\n";
-        }
-    }*/
 
     LoadHeightMap();
 
@@ -43,7 +34,7 @@ Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
 
 // Destructor
 Terrain::~Terrain(){
-    // Delete our allocatted higheithmap data
+    // Delete our allocatted heightmap data
     if(m_heightData!=nullptr){
         delete m_heightData;
     }
@@ -63,7 +54,7 @@ void Terrain::Init(){
             float u = 1.0f - ((float)x/(float)m_xSegments);
             float v = 1.0f - ((float)z/(float)m_zSegments);
             // Calculate the correct position and add the texture coordinates
-            m_geometry.AddVertex(x,m_heightData[x+z*m_xSegments],z,u,v);
+            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_xSegments],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
         }
     }
     
@@ -102,10 +93,24 @@ void Terrain::LoadHeightMap(){
     // populate heightData
     for (unsigned int z = 0; z < m_zSegments; ++z) {
         for (unsigned int x = 0; x < m_xSegments; ++x) {
-            m_heightData[x + z * m_xSegments] = ComputeHeight(x, z);
-            //std::cout << m_heightData[x + z * m_xSegments] << "\n";
+            m_heightData[x + z * m_xSegments] = ComputeHeight(x + m_xOffset, z + m_zOffset);
         }
     }
+}
+
+// TODO: Instead of re-drawing the terrain at every iteration, do this instead:
+// 1) Create a new function called UpdateHeightMap
+// 2) Move the existing positions in the array by how much the xDelta and yDelta are
+// 3) Update only the cells of the array that need to be updated
+void Terrain::MoveCamera(int x, int z) {
+    int xDelta = x - m_xOffset;
+    int yDelta = y - m_xOffset;
+
+    m_xOffset = x / TERRAIN_UNIT_SIZE;
+    m_zOffset = z / TERRAIN_UNIT_SIZE;
+
+    // Uncomment this to load every turn
+    //LoadHeightMap();
 }
 
 void Terrain::LoadTextures(std::string colormap, std::string detailmap){ 
@@ -117,9 +122,6 @@ void Terrain::LoadTextures(std::string colormap, std::string detailmap){
 // Code inspired by this handy demonstration:
 // https://www.youtube.com/watch?v=U9q-jM3-Phc&t=9s&ab_channel=SimonDev
 float Terrain::ComputeHeight(int x, int y) {
-    const siv::PerlinNoise::seed_type seed = TERRAIN_SEED;
-    const siv::PerlinNoise perlin{ seed };
-
     const float xs = x / TERRAIN_SCALE;
     const float ys = y / TERRAIN_SCALE;
     const float G = 2.0 * (-TERRAIN_PERSISTENCE);
