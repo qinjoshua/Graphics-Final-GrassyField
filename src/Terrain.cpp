@@ -7,7 +7,7 @@
 
 // Constructor for our object
 // Calls the initialization method
-Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) : 
+Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
                 m_xSegments(xSegs), m_zSegments(zSegs) {
     std::cout << "(Terrain.cpp) Constructor called \n";
 
@@ -17,7 +17,7 @@ Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
     // Set the height data for the image
     // TODO: Currently there is a 1-1 mapping between a pixel and a segment
     // You might consider interpolating values if there are more segments
-    // than pixels. 
+    // than pixels.
     float scale = 5.0f; // Note that this scales down the values to make
                         // the image a bit more flat.
     // Create height data
@@ -48,7 +48,7 @@ Terrain::~Terrain(){
 void Terrain::Init(){
     // Create the initial grid of vertices.
 
-    // Build grid of vertices! 
+    // Build grid of vertices!
     for(unsigned int z=0; z < m_zSegments; ++z){
         for(unsigned int x =0; x < m_xSegments; ++x){
             float u = 1.0f - ((float)x/(float)m_xSegments);
@@ -57,11 +57,11 @@ void Terrain::Init(){
             m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_xSegments],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
         }
     }
-    
+
     // Figure out which indices make up each triangle
     // By writing out a few of the indicies you can figure out
     // the pattern here. Note there is an offset.
-    
+
     // Build triangle strip
     for(unsigned int z=0; z < m_zSegments-1; ++z){
         for(unsigned int x =0; x < m_xSegments-1; ++x){
@@ -78,7 +78,7 @@ void Terrain::Init(){
 
    // Finally generate a simple 'array of bytes' that contains
    // everything for our buffer to work with.
-   m_geometry.Gen();  
+   m_geometry.Gen();
    // Create a buffer and set the stride of information
    m_vertexBufferLayout.CreateNormalBufferLayout(m_geometry.GetBufferDataSize(),
                                         m_geometry.GetIndicesSize(),
@@ -102,7 +102,7 @@ void Terrain::LoadHeightMap(){
 // 1) Create a new function called UpdateHeightMap
 // 2) Move the existing positions in the array by how much the xDelta and yDelta are
 // 3) Update only the cells of the array that need to be updated
-void Terrain::MoveCamera(int x, int z) {
+/*void Terrain::MoveCamera(int x, int z) {
     int xDelta = x - m_xOffset;
     int yDelta = y - m_xOffset;
 
@@ -111,9 +111,9 @@ void Terrain::MoveCamera(int x, int z) {
 
     // Uncomment this to load every turn
     //LoadHeightMap();
-}
+}*/
 
-void Terrain::LoadTextures(std::string colormap, std::string detailmap){ 
+void Terrain::LoadTextures(std::string colormap, std::string detailmap){
         // Load our actual textures
         m_textureDiffuse.LoadTexture(colormap); // Found in object
         m_detailMap.LoadTexture(detailmap);     // Found in object

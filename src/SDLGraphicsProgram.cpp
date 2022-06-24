@@ -1,6 +1,7 @@
 #include "SDLGraphicsProgram.hpp"
 #include "Camera.hpp"
 #include "Terrain.hpp"
+#include "Constants.hpp"
 // Include the 'Renderer.hpp' which deteremines what
 // the graphics API is going to be for OpenGL
 #include "Renderer.hpp"
@@ -99,7 +100,8 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     renderer->setRoot(terrainNode);
 
     // Set a default position for our camera
-    renderer->GetCamera(0)->SetCameraEyePosition(125.0f,50.0f,500.0f);
+    float initialEyesYPOS = myTerrain->ComputeHeight(125.0f, 500.0f);
+    renderer->GetCamera(0)->SetCameraEyePosition(125.0f,initialEyesYPOS + EYES_HEIGHT,500.0f);
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
     bool quit = false;
@@ -146,16 +148,20 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
         // Move left or right
         if(keyboardState[SDL_SCANCODE_LEFT]){
-            renderer->GetCamera(0)->MoveLeft(cameraSpeed);
+            //renderer->GetCamera(0)->MoveLeft(cameraSpeed);
+            renderer->GetCamera(0)->WalkLeft(cameraSpeed, myTerrain);
         }else if(keyboardState[SDL_SCANCODE_RIGHT]){
-            renderer->GetCamera(0)->MoveRight(cameraSpeed);
+            //renderer->GetCamera(0)->MoveRight(cameraSpeed);
+            renderer->GetCamera(0)->WalkRight(cameraSpeed, myTerrain);
         }
 
         // Move forward or back
         if(keyboardState[SDL_SCANCODE_UP]){
-            renderer->GetCamera(0)->MoveForward(cameraSpeed);
+            //renderer->GetCamera(0)->MoveForward(cameraSpeed);
+            renderer->GetCamera(0)->WalkForward(cameraSpeed, myTerrain);
         }else if(keyboardState[SDL_SCANCODE_DOWN]){
-            renderer->GetCamera(0)->MoveBackward(cameraSpeed);
+            //renderer->GetCamera(0)->MoveBackward(cameraSpeed);
+            renderer->GetCamera(0)->WalkBackward(cameraSpeed, myTerrain);
         }
 
         // Move up or down
@@ -168,7 +174,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         //std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
 
         // Update the terrain based on the camera location
-        myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
+        //myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
 
         // Update our scene through our renderer
         renderer->Update();
