@@ -87,7 +87,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(m_width,m_height);    
 
     // Create our terrain
-    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(512,512,"./assets/textures/terrain2.ppm");
+    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(SPACE_HEIGHT, SPACE_WIDTH,"./assets/textures/terrain2.ppm");
     myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
 
     // Create a node for our terrain 
@@ -100,8 +100,8 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     renderer->setRoot(terrainNode);
 
     // Set a default position for our camera
-    float initialEyesYPOS = myTerrain->ComputeHeight(125.0f, 500.0f);
-    renderer->GetCamera(0)->SetCameraEyePosition(125.0f,initialEyesYPOS + EYES_HEIGHT,500.0f);
+    float initialEyesYPOS = myTerrain->ComputeHeight(PLAYER_START_X_POS, PLAYER_START_Z_POS);
+    renderer->GetCamera(0)->SetCameraEyePosition(PLAYER_START_X_POS,initialEyesYPOS + EYES_HEIGHT, PLAYER_START_Z_POS);
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
     bool quit = false;

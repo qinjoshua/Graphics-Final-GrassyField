@@ -1,6 +1,6 @@
 /** @file Terrain.hpp
  *  @brief Create a terrain
- *  
+ *
  *  More...
  *
  *  @author Mike
@@ -33,8 +33,13 @@ public:
     // Load textures
     void LoadTextures(std::string colormap, std::string detailmap);
 
+    // Computes the height of a given x and y coordinate
+    float ComputeHeight(int x, int y);
+
     // Moves the position of the camera to the given location
     void MoveCamera(int x, int y);
+
+    void ScrewBuffer();
 
 private:
     // data
@@ -47,11 +52,11 @@ private:
     // Store the height in a multidimensional array
     float* m_heightData;
 
-    // Computes the height of a given x and y coordinate
-    float ComputeHeight(int x, int y);
-
     const siv::PerlinNoise::seed_type seed = 123456u;
     const siv::PerlinNoise perlin{ seed };
+
+    int m_BoxXPos;
+    int m_BoxZPos;
 };
 
 #endif

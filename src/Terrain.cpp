@@ -11,6 +11,9 @@ Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
                 m_xSegments(xSegs), m_zSegments(zSegs) {
     std::cout << "(Terrain.cpp) Constructor called \n";
 
+    m_BoxXPos = PLAYER_START_X_POS / BOX_SIZE * BOX_SIZE - BOX_SIZE;
+    m_BoxZPos = PLAYER_START_Z_POS / BOX_SIZE * BOX_SIZE - BOX_SIZE;
+
     // Load up some image data
     Image heightMap(fileName);
     heightMap.LoadPPM(true);
@@ -58,6 +61,15 @@ void Terrain::Init(){
         }
     }
 
+    /*for(unsigned int z=m_BoxZPos - Box_Size; z < m_BoxZPos + Box_Size * 2; ++z){
+        for(unsigned int x =0; x < m_xSegments; ++x){
+            float u = 1.0f - ((float)x/(float)m_xSegments);
+            float v = 1.0f - ((float)z/(float)m_zSegments);
+            // Calculate the correct position and add the texture coordinates
+            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_xSegments],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
+        }
+    }*/
+
     // Figure out which indices make up each triangle
     // By writing out a few of the indicies you can figure out
     // the pattern here. Note there is an offset.
@@ -86,8 +98,6 @@ void Terrain::Init(){
                                         m_geometry.GetIndicesDataPtr());
 }
 
-
-
 // Builds the heights of the terrain from perlin noise
 void Terrain::LoadHeightMap(){
     // populate heightData
@@ -102,16 +112,17 @@ void Terrain::LoadHeightMap(){
 // 1) Create a new function called UpdateHeightMap
 // 2) Move the existing positions in the array by how much the xDelta and yDelta are
 // 3) Update only the cells of the array that need to be updated
-/*void Terrain::MoveCamera(int x, int z) {
+void Terrain::MoveCamera(int x, int z) {
     int xDelta = x - m_xOffset;
-    int yDelta = y - m_xOffset;
+    int zDelta = z - m_xOffset;
 
     m_xOffset = x / TERRAIN_UNIT_SIZE;
     m_zOffset = z / TERRAIN_UNIT_SIZE;
 
     // Uncomment this to load every turn
-    //LoadHeightMap();
-}*/
+    LoadHeightMap();
+    Init();
+}
 
 void Terrain::LoadTextures(std::string colormap, std::string detailmap){
         // Load our actual textures
