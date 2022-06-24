@@ -54,7 +54,7 @@ void Terrain::Init(){
             float u = 1.0f - ((float)x/(float)m_xSegments);
             float v = 1.0f - ((float)z/(float)m_zSegments);
             // Calculate the correct position and add the texture coordinates
-            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_xSegments],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
+            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_xSegments],z * TERRAIN_UNIT_SIZE + m_zOffset * TERRAIN_UNIT_SIZE, u,v);
         }
     }
     
@@ -104,7 +104,7 @@ void Terrain::LoadHeightMap(){
 // 3) Update only the cells of the array that need to be updated
 void Terrain::MoveCamera(int x, int z) {
     int xDelta = x - m_xOffset;
-    int yDelta = y - m_xOffset;
+    int yDelta = z - m_xOffset;
 
     m_xOffset = x / TERRAIN_UNIT_SIZE;
     m_zOffset = z / TERRAIN_UNIT_SIZE;

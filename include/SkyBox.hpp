@@ -21,24 +21,16 @@
 class SkyBox : public Object {
 public:
     // Takes in file names for the faces of the SkyBox.
-    SkyBox (std::string fileName);
+    SkyBox ();
     // Destructor
     ~SkyBox ();
+    void MakeTexturedQuad(std::string fileName);
     // override the initilization routine.
     void Init();
+    // Override the rendering routin.
+    void Render();
 
 private:
-    // data
-    unsigned int m_xSegments;
-    unsigned int m_zSegments;
-
-    // Store the height in a multidimensional array
-    float* m_heightData;
-
-    // Computes the height of a given x and y coordinate
-    float ComputeHeight(int x, int y);
-    // Load textures
-    void LoadTexture(std::string filepath);
     // Load SkyBox
     void LoadSkyBox(std::vector<std::string> faces);
 };

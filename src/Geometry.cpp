@@ -108,6 +108,17 @@ void Geometry::Gen(){
 	}
 }
 
+// Only generates the vertex positions
+void Geometry::GenVertices() {
+	for (int i = 0; i < m_vertexPositions.size() / 3; ++i) {
+		// First vertex
+			// vertices
+		m_bufferData.push_back(m_vertexPositions[i * 3 + 0]);
+		m_bufferData.push_back(m_vertexPositions[i * 3 + 1]);
+		m_bufferData.push_back(m_vertexPositions[i * 3 + 2]);
+	}
+}
+
 // The big trick here, is that when we make a triangle
 // We also need to update our m_normals, tangents, and bi-tangents.
 void Geometry::MakeTriangle(unsigned int vert0, unsigned int vert1, unsigned int vert2){

@@ -1,3 +1,4 @@
+#include "..\include\SkyBox.hpp"
 #include "SkyBox.hpp"
 #include "Constants.hpp"
 #include "Image.hpp"
@@ -8,124 +9,170 @@
 
 // Constructor for our object
 // Calls the initialization method
-SkyBox::SkyBox(std::string fileName) {
+SkyBox::SkyBox() {
     std::cout << "(SkyBox.cpp) Constructor called \n";
 
-    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
 
-    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
 
-    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
 
-    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    ///*m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);*/
 
-    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
 
-    m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
+    //m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    //m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
 
-    
-    // Load up some image data
-    Image heightMap(fileName);
-    heightMap.LoadPPM(true);
-    // Set the height data for the image
-    // TODO: Currently there is a 1-1 mapping between a pixel and a segment
-    // You might consider interpolating values if there are more segments
-    // than pixels. 
-    float scale = 5.0f; // Note that this scales down the values to make
-                        // the image a bit more flat.
-    // Create height data
-    m_heightData = new float[m_xSegments*m_zSegments];
-    // Set the height data equal to the grayscale value of the heightmap
-    // Because the R,G,B will all be equal in a grayscale iamge, then
-    // we just grab one of the color components.
 
-    // Initialize the SkyBox
-    Init();
+    //m_geometry.GenVertices();
+
+    float skyboxVertices[] = {
+        // positions          
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };
+
+    unsigned int skyboxVAO, skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
 // Destructor
 SkyBox::~SkyBox(){
     // Delete our allocatted heightmap data
-    if(m_heightData!=nullptr){
+    /*if(m_heightData!=nullptr){
         delete m_heightData;
-    }
+    }*/
 }
 
+void SkyBox::MakeTexturedQuad(std::string fileName) {
+    uint8_t fileExtensionStart = fileName.find(".");
+    if (fileExtensionStart) {
+        fileName = fileName.substr(0, fileExtensionStart);
+    }
 
-// Creates a grid of segments
-// This article has a pretty handy illustration here:
-// http://www.learnopengles.com/wordpress/wp-content/uploads/2012/05/vbo.png
-// of what we are trying to do.
-void SkyBox::Init(){
+    std::vector<std::string> faces;
+    faces.push_back(fileName + "right.ppm");
+    faces.push_back(fileName + "left.ppm");
+    faces.push_back(fileName + "top.ppm");
+    faces.push_back(fileName + "front.ppm");
+    faces.push_back(fileName + "back.ppm");
+
+    LoadSkyBox(faces);
+}
+
+void SkyBox::Render() {
     
 }
 
-void SkyBox::LoadTexture(std::string filepath){ 
-    m_textureDiffuse.LoadTexture(filepath); // Found in object
-}
-
-// Code inspired by this handy demonstration:
-// https://www.youtube.com/watch?v=U9q-jM3-Phc&t=9s&ab_channel=SimonDev
+// Code inspired by this article:
+// https://learnopengl.com/Advanced-OpenGL/Cubemaps
 void SkyBox::LoadSkyBox(std::vector<std::string> faces) {
-    unsigned int textureID;/*
+    unsigned int textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
     for (unsigned int i = 0; i < faces.size(); i++)
     {
-        Image* m_image = new Image(faces[i].c_str());
-        m_image->LoadPPM(true);
+        unsigned int index = i >= GL_TEXTURE_CUBE_MAP_NEGATIVE_Y ? i : i + 1;
+
+        Image* image = new Image(faces[i].c_str());
+        image->LoadPPM(true);
         
-        if (m_image)
+        if (image)
         {
-            glTexImage2D(GL_TEXTURE_2D,
-                0,
-                GL_RGB,
-                m_image->GetWidth(),
-                m_image->GetHeight(),
-                0,
-                GL_RGB,
-                GL_UNSIGNED_BYTE,
-                m_image->GetPixelDataPtr());
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index,
+                0, GL_RGB, image->GetWidth(), image->GetHeight(), 0,
+                GL_RGB, GL_UNSIGNED_BYTE, image->GetPixelDataPtr());
         }
         else
         {
             std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+        }
+
+        // Delete our image
+        if (image != nullptr) {
+            delete image;
         }
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);*/
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
