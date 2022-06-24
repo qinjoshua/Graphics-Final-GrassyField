@@ -7,12 +7,15 @@
 
 // Constructor for our object
 // Calls the initialization method
-Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
-                m_xSegments(xSegs), m_zSegments(zSegs) {
+Terrain::Terrain(unsigned int boxWidth, std::string fileName) :
+                m_boxWidth(boxWidth), m_renderAreaWidth(boxWidth * 3) {
     std::cout << "(Terrain.cpp) Constructor called \n";
 
-    m_BoxXPos = PLAYER_START_X_POS / BOX_SIZE * BOX_SIZE - BOX_SIZE;
-    m_BoxZPos = PLAYER_START_Z_POS / BOX_SIZE * BOX_SIZE - BOX_SIZE;
+    m_boxXIndex = PLAYER_START_X_POS / TERRAIN_UNIT_SIZE / m_boxWidth;
+    m_boxZIndex = PLAYER_START_Z_POS / TERRAIN_UNIT_SIZE / m_boxWidth;
+
+    m_xPos = PLAYER_START_X_POS;
+    m_zPos = PLAYER_START_Z_POS;
 
     // Load up some image data
     Image heightMap(fileName);
@@ -24,10 +27,7 @@ Terrain::Terrain(unsigned int xSegs, unsigned int zSegs, std::string fileName) :
     float scale = 5.0f; // Note that this scales down the values to make
                         // the image a bit more flat.
     // Create height data
-    m_heightData = new float[m_xSegments*m_zSegments];
-    // Set the height data equal to the grayscale value of the heightmap
-    // Because the R,G,B will all be equal in a grayscale iamge, then
-    // we just grab one of the color components.
+    m_heightData = new float[m_boxWidth * m_boxWidth * 9];
 
     LoadHeightMap();
 
@@ -50,23 +50,25 @@ Terrain::~Terrain(){
 // of what we are trying to do.
 void Terrain::Init(){
     // Create the initial grid of vertices.
+    m_geometry = Geometry();
+    m_vertexBufferLayout = VertexBufferLayout();
 
     // Build grid of vertices!
-    for(unsigned int z=0; z < m_zSegments; ++z){
-        for(unsigned int x =0; x < m_xSegments; ++x){
-            float u = 1.0f - ((float)x/(float)m_xSegments);
-            float v = 1.0f - ((float)z/(float)m_zSegments);
+    for(unsigned int z=0; z < m_renderAreaWidth; ++z){
+        for(unsigned int x =0; x < m_renderAreaWidth; ++x){
+            float u = 1.0f - ((float)x/(float)m_renderAreaWidth);
+            float v = 1.0f - ((float)z/(float)m_renderAreaWidth);
             // Calculate the correct position and add the texture coordinates
-            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_xSegments],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
+            m_geometry.AddVertex(ToActualXPosition(x), m_heightData[x+z*(m_renderAreaWidth)],ToActualZPosition(z), u,v);
         }
     }
 
     /*for(unsigned int z=m_BoxZPos - Box_Size; z < m_BoxZPos + Box_Size * 2; ++z){
-        for(unsigned int x =0; x < m_xSegments; ++x){
-            float u = 1.0f - ((float)x/(float)m_xSegments);
-            float v = 1.0f - ((float)z/(float)m_zSegments);
+        for(unsigned int x =0; x < m_renderAreaWidth; ++x){
+            float u = 1.0f - ((float)x/(float)m_renderAreaWidth);
+            float v = 1.0f - ((float)z/(float)m_renderAreaWidth);
             // Calculate the correct position and add the texture coordinates
-            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_xSegments],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
+            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_renderAreaWidth],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
         }
     }*/
 
@@ -75,15 +77,15 @@ void Terrain::Init(){
     // the pattern here. Note there is an offset.
 
     // Build triangle strip
-    for(unsigned int z=0; z < m_zSegments-1; ++z){
-        for(unsigned int x =0; x < m_xSegments-1; ++x){
-            m_geometry.AddIndex(x+(z*m_zSegments));
-            m_geometry.AddIndex(x+(z*m_zSegments)+m_xSegments);
-            m_geometry.AddIndex(x+(z*m_zSegments+1));
+    for(unsigned int z=0; z < m_renderAreaWidth-1; ++z){
+        for(unsigned int x =0; x < m_renderAreaWidth-1; ++x){
+            m_geometry.AddIndex(x+(z*m_renderAreaWidth));
+            m_geometry.AddIndex(x+(z*m_renderAreaWidth)+m_renderAreaWidth);
+            m_geometry.AddIndex(x+(z*m_renderAreaWidth+1));
 
-            m_geometry.AddIndex(x+(z*m_zSegments)+1);
-            m_geometry.AddIndex(x+(z*m_zSegments)+m_xSegments);
-            m_geometry.AddIndex(x+(z*m_zSegments)+m_xSegments+1);
+            m_geometry.AddIndex(x+(z*m_renderAreaWidth)+1);
+            m_geometry.AddIndex(x+(z*m_renderAreaWidth)+m_renderAreaWidth);
+            m_geometry.AddIndex(x+(z*m_renderAreaWidth)+m_renderAreaWidth+1);
         }
     }
 
@@ -101,11 +103,53 @@ void Terrain::Init(){
 // Builds the heights of the terrain from perlin noise
 void Terrain::LoadHeightMap(){
     // populate heightData
-    for (unsigned int z = 0; z < m_zSegments; ++z) {
-        for (unsigned int x = 0; x < m_xSegments; ++x) {
-            m_heightData[x + z * m_xSegments] = ComputeHeight(x + m_xOffset, z + m_zOffset);
+    for (unsigned int z = 0; z < m_renderAreaWidth; ++z) {
+        for (unsigned int x = 0; x < m_renderAreaWidth; ++x) {
+            m_heightData[x + (z * m_renderAreaWidth)] = ComputeHeight(ToActualXPosition(x), ToActualZPosition(z));
         }
     }
+}
+
+// The offsets represent how many places existing data needs to be moved, negative for left and positive for right
+void Terrain::UpdateHeightMap(int xOffset, int zOffset) {
+    
+    int xLower = xOffset > 0 ? xOffset * m_boxWidth : 0;
+    int xUpper = xOffset < 0 ? m_renderAreaWidth + xOffset * m_boxWidth : m_renderAreaWidth;
+    int zLower = zOffset > 0 ? zOffset * m_boxWidth : 0;
+    int zUpper = zOffset < 0 ? m_renderAreaWidth + zOffset * m_boxWidth : m_renderAreaWidth;
+    
+    // temporary heightData to cache values
+    float* heightData = new float[m_boxWidth * m_boxWidth * 9];
+
+    for (unsigned int z = 0; z < m_renderAreaWidth; ++z) {
+        for (unsigned int x = 0; x < m_renderAreaWidth; ++x) {
+            // This means that this point is in the old array - no need to recalculate
+            /*if (x >= xLower && x < xUpper && z >= zLower && z < zUpper) {
+                heightData[x + (z * m_renderAreaWidth)] = m_heightData[(x-xOffset) + ((z-zOffset) * m_renderAreaWidth)];
+            }
+            else {*/
+                heightData[x + (z * m_renderAreaWidth)] = ComputeHeight(ToActualXPosition(x), ToActualZPosition(z));
+            //}
+        }
+    }
+
+    // Copy all the data over
+    /*for (unsigned int z = 0; z < m_renderAreaWidth; ++z) {
+        for (unsigned int x = 0; x < m_renderAreaWidth; ++x) {
+            m_heightData[x + (z * m_renderAreaWidth)] = heightData[x + (z * m_renderAreaWidth)];
+        }
+    }*/
+
+    delete[] m_heightData;
+    m_heightData = heightData;
+}
+
+int Terrain::ToActualXPosition(int x) {
+    return TERRAIN_UNIT_SIZE * ((m_boxXIndex - 1) * (int)m_boxWidth + x);
+}
+
+int Terrain::ToActualZPosition(int z) {
+    return TERRAIN_UNIT_SIZE * ((m_boxZIndex - 1) * (int)m_boxWidth + z);
 }
 
 // TODO: Instead of re-drawing the terrain at every iteration, do this instead:
@@ -113,15 +157,18 @@ void Terrain::LoadHeightMap(){
 // 2) Move the existing positions in the array by how much the xDelta and yDelta are
 // 3) Update only the cells of the array that need to be updated
 void Terrain::MoveCamera(int x, int z) {
-    int xDelta = x - m_xOffset;
-    int zDelta = z - m_xOffset;
+    int boxXIndex = x >= 0 ? x / TERRAIN_UNIT_SIZE / m_boxWidth : x / TERRAIN_UNIT_SIZE / m_boxWidth - 1;
+    int boxZIndex = z >= 0 ? z / TERRAIN_UNIT_SIZE / m_boxWidth : z / TERRAIN_UNIT_SIZE / m_boxWidth - 1;
 
-    m_xOffset = x / TERRAIN_UNIT_SIZE;
-    m_zOffset = z / TERRAIN_UNIT_SIZE;
+    int xOffset = (int)m_boxXIndex - (int)boxXIndex;
+    int zOffset = (int)m_boxZIndex - (int)boxZIndex;
 
-    // Uncomment this to load every turn
-    LoadHeightMap();
-    Init();
+    if (xOffset != 0 || zOffset != 0) {
+        m_boxXIndex = boxXIndex;
+        m_boxZIndex = boxZIndex;
+        UpdateHeightMap(xOffset, zOffset);
+        Init();
+    }
 }
 
 void Terrain::LoadTextures(std::string colormap, std::string detailmap){

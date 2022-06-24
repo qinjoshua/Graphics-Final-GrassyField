@@ -22,7 +22,7 @@
 class Terrain : public Object {
 public:
     // Takes in a Terrain and a filename for the heightmap.
-    Terrain (unsigned int xSegs, unsigned int zSegs, std::string fileName);
+    Terrain (unsigned int boxWidth, std::string fileName);
     // Destructor
     ~Terrain ();
     // override the initilization routine.
@@ -46,8 +46,11 @@ private:
     unsigned int m_xSegments;
     unsigned int m_zSegments;
 
-    int m_xOffset = 0;
-    int m_zOffset = 0;
+    unsigned int m_boxWidth;
+    unsigned int m_renderAreaWidth;
+
+    int m_xPos = 0;
+    int m_zPos = 0;
 
     // Store the height in a multidimensional array
     float* m_heightData;
@@ -55,8 +58,14 @@ private:
     const siv::PerlinNoise::seed_type seed = 123456u;
     const siv::PerlinNoise perlin{ seed };
 
-    int m_BoxXPos;
-    int m_BoxZPos;
+    // Stores the x and z indices of the box that the player is currently in
+    int m_boxXIndex;
+    int m_boxZIndex;
+
+    int ToActualXPosition(int x);
+    int ToActualZPosition(int z);
+
+    void UpdateHeightMap(int xOffset, int zOffset);
 };
 
 #endif

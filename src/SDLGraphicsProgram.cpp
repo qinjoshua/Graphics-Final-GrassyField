@@ -87,7 +87,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(m_width,m_height);    
 
     // Create our terrain
-    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(SPACE_HEIGHT, SPACE_WIDTH,"./assets/textures/terrain2.ppm");
+    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(TERRAIN_BOX_SIZE,"./assets/textures/terrain2.ppm");
     myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
 
     // Create a node for our terrain 
@@ -171,10 +171,10 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
             renderer->GetCamera(0)->MoveDown(cameraSpeed);
         }
 		
-        //std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
+        std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
 
         // Update the terrain based on the camera location
-        //myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
+        myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
 
         // Update our scene through our renderer
         renderer->Update();
