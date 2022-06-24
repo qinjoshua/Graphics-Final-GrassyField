@@ -27,12 +27,12 @@ public:
     void MakeTexturedQuad(std::string fileName);
     // override the initilization routine.
     void Init();
-    // Override the rendering routin.
     void Render();
 
 private:
     // Load SkyBox
     void LoadSkyBox(std::vector<std::string> faces);
+    unsigned int texturedID;
 };
 
 #endif

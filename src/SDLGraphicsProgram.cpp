@@ -88,11 +88,14 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
     // Create our skybox
     std::shared_ptr<SkyBox> sky = std::make_shared<SkyBox>();
-    sky->LoadTexture("./assets/textures/skybox/bluesky");
+    sky->MakeTexturedQuad("./assets/textures/skybox/");
 
     // Create our terrain
     std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(512,512,"./assets/textures/terrain2.ppm");
     myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
+
+    std::shared_ptr<SceneNode> skyNode;
+    skyNode = std::make_shared<SceneNode>(sky, "./shaders/skyBoxVert.glsl", "./shaders/skyBoxFrag.glsl");
 
     // Create a node for our terrain 
     std::shared_ptr<SceneNode> terrainNode;
@@ -100,6 +103,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
     // Set our SceneTree up
     renderer->setRoot(terrainNode);
+    terrainNode->AddChild(skyNode.get());
 
     // Set a default position for our camera
     renderer->GetCamera(0)->SetCameraEyePosition(125.0f,50.0f,500.0f);
@@ -171,7 +175,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         //std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
 
         // Update the terrain based on the camera location
-        myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
+        //myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
 
         // Update our scene through our renderer
         renderer->Update();
@@ -180,7 +184,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         
-        std::shared_ptr<Shader> skyboxShader = std::make_shared<Shader>();
+        /*std::shared_ptr<Shader> skyboxShader = std::make_shared<Shader>();
 
         // Create shader
         skyboxShader = std::make_shared<Shader>();
@@ -201,7 +205,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
-        glDepthFunc(GL_LESS);
+        glDepthFunc(GL_LESS);*/
 
         // Delay to slow things down just a bit!
         SDL_Delay(25);  // TODO: You can change this or implement a frame

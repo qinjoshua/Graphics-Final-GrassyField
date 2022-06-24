@@ -1,4 +1,3 @@
-#include "..\include\SkyBox.hpp"
 #include "SkyBox.hpp"
 #include "Constants.hpp"
 #include "Image.hpp"
@@ -33,7 +32,7 @@ SkyBox::SkyBox() {
     //m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
     //m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
 
-    ///*m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    //*m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
     //m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
     //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
     //m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
@@ -120,6 +119,15 @@ SkyBox::~SkyBox(){
     }*/
 }
 
+void SkyBox::Render() {
+    Bind();
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texturedID);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    glDepthFunc(GL_LESS);
+}
+
+
 void SkyBox::MakeTexturedQuad(std::string fileName) {
     uint8_t fileExtensionStart = fileName.find(".");
     if (fileExtensionStart) {
@@ -130,14 +138,12 @@ void SkyBox::MakeTexturedQuad(std::string fileName) {
     faces.push_back(fileName + "right.ppm");
     faces.push_back(fileName + "left.ppm");
     faces.push_back(fileName + "top.ppm");
+    faces.push_back(fileName + "back.ppm");
     faces.push_back(fileName + "front.ppm");
     faces.push_back(fileName + "back.ppm");
 
-    LoadSkyBox(faces);
-}
 
-void SkyBox::Render() {
-    
+    LoadSkyBox(faces);
 }
 
 // Code inspired by this article:
@@ -175,4 +181,6 @@ void SkyBox::LoadSkyBox(std::vector<std::string> faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    texturedID = textureID;
 }

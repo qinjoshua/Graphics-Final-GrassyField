@@ -3,7 +3,7 @@ import os
 import platform
 
 # (1)==================== COMMON CONFIGURATION OPTIONS ======================= #
-COMPILER="g++ -std=c++17"   # The compiler we want to use 
+COMPILER="g++ -std=c++17"   # The compiler we want to use
                                 #(You may try g++ if you have trouble)
 SOURCE="./src/*.cpp"    # Where the source code lives
 EXECUTABLE="lab"        # Name of the final executable
@@ -21,11 +21,11 @@ if platform.system()=="Linux":
     LIBRARIES="-lSDL2 -ldl"
 elif platform.system()=="Darwin":
     ARGUMENTS="-D MAC" # -D is a #define sent to the preprocessor.
-    INCLUDE_DIR="-I ./include/ -I/Library/Frameworks/SDL2.framework/Headers -I./../common/thirdparty/old/glm"
+    INCLUDE_DIR="-I ./include/ -I/Library/Frameworks/SDL2.framework/Headers -I./glm"
     LIBRARIES="-F/Library/Frameworks -framework SDL2"
 elif platform.system()=="Windows":
     COMPILER="g++ -std=c++17" # Note we use g++ here as it is more likely what you have
-    ARGUMENTS="-D MINGW -std=c++14 -static-libgcc -static-libstdc++" 
+    ARGUMENTS="-D MINGW -std=c++14 -static-libgcc -static-libstdc++"
     INCLUDE_DIR="-I./include/ -I./../common/thirdparty/old/glm/"
     EXECUTABLE="lab.exe"
     LIBRARIES="-lmingw32 -lSDL2main -lSDL2 -mwindows"
@@ -60,13 +60,11 @@ os.system(compileString)
 
 
 # Why am I not using Make?
-# 1.)   I want total control over the system. 
+# 1.)   I want total control over the system.
 #       Occassionally I want to have some logic
 #       in my compilation process (like searching for missing files).
-# 2.)   Realistically our projects are 'small' enough 
+# 2.)   Realistically our projects are 'small' enough
 #       this will not matter.
 # 3.)   Feel free to implement your own make files or autogenerate it from this
 #       script
 # 4.)   It is handy to know Python
-
-
