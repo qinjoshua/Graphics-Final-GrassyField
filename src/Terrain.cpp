@@ -12,11 +12,11 @@ Terrain::Terrain(unsigned int boxWidth, std::string fileName) :
                 m_boxWidth(boxWidth), m_renderAreaWidth(boxWidth * 3) {
     std::cout << "(Terrain.cpp) Constructor called \n";
 
-    m_boxXIndex = PLAYER_START_X_POS / TERRAIN_UNIT_SIZE / m_boxWidth;
-    m_boxZIndex = PLAYER_START_Z_POS / TERRAIN_UNIT_SIZE / m_boxWidth;
+    m_boxXIndex = Constants::PLAYER_START_X_POS / Constants::TERRAIN_UNIT_SIZE / m_boxWidth;
+    m_boxZIndex = Constants::PLAYER_START_Z_POS / Constants::TERRAIN_UNIT_SIZE / m_boxWidth;
 
-    m_xPos = PLAYER_START_X_POS;
-    m_zPos = PLAYER_START_Z_POS;
+    m_xPos = Constants::PLAYER_START_X_POS;
+    m_zPos = Constants::PLAYER_START_Z_POS;
 
     // Load up some image data
     Image heightMap(fileName);
@@ -50,6 +50,7 @@ Terrain::~Terrain(){
 // http://www.learnopengles.com/wordpress/wp-content/uploads/2012/05/vbo.png
 // of what we are trying to do.
 void Terrain::Init(){
+    std::cout << Constants::TERRAIN_SCALE << std::endl;
     // Create the initial grid of vertices.
     m_geometry = Geometry();
     m_vertexBufferLayout = VertexBufferLayout();
@@ -146,11 +147,11 @@ void Terrain::UpdateHeightMap(int xOffset, int zOffset) {
 }
 
 int Terrain::ToActualXPosition(int x) {
-    return TERRAIN_UNIT_SIZE * ((m_boxXIndex - 1) * (int)m_boxWidth + x);
+    return Constants::TERRAIN_UNIT_SIZE * ((m_boxXIndex - 1) * (int)m_boxWidth + x);
 }
 
 int Terrain::ToActualZPosition(int z) {
-    return TERRAIN_UNIT_SIZE * ((m_boxZIndex - 1) * (int)m_boxWidth + z);
+    return Constants::TERRAIN_UNIT_SIZE * ((m_boxZIndex - 1) * (int)m_boxWidth + z);
 }
 
 // TODO: Instead of re-drawing the terrain at every iteration, do this instead:
@@ -158,8 +159,8 @@ int Terrain::ToActualZPosition(int z) {
 // 2) Move the existing positions in the array by how much the xDelta and yDelta are
 // 3) Update only the cells of the array that need to be updated
 void Terrain::MoveCamera(int x, int z) {
-    int boxXIndex = x >= 0 ? x / TERRAIN_UNIT_SIZE / m_boxWidth : x / TERRAIN_UNIT_SIZE / m_boxWidth - 1;
-    int boxZIndex = z >= 0 ? z / TERRAIN_UNIT_SIZE / m_boxWidth : z / TERRAIN_UNIT_SIZE / m_boxWidth - 1;
+    int boxXIndex = x >= 0 ? x / Constants::TERRAIN_UNIT_SIZE / m_boxWidth : x / Constants::TERRAIN_UNIT_SIZE / m_boxWidth - 1;
+    int boxZIndex = z >= 0 ? z / Constants::TERRAIN_UNIT_SIZE / m_boxWidth : z / Constants::TERRAIN_UNIT_SIZE / m_boxWidth - 1;
 
     int xOffset = (int)m_boxXIndex - (int)boxXIndex;
     int zOffset = (int)m_boxZIndex - (int)boxZIndex;
@@ -184,23 +185,23 @@ void Terrain::LoadTextures(std::string colormap, std::string detailmap){
 // Code inspired by this handy demonstration:
 // https://www.youtube.com/watch?v=U9q-jM3-Phc&t=9s&ab_channel=SimonDev
 float Terrain::ComputeHeight(int x, int y) {
-    const float xs = x / TERRAIN_SCALE;
-    const float ys = y / TERRAIN_SCALE;
-    const float G = 2.0 * (-TERRAIN_PERSISTENCE);
+    const float xs = x / Constants::TERRAIN_SCALE;
+    const float ys = y / Constants::TERRAIN_SCALE;
+    const float G = pow(2.0, (-Constants::TERRAIN_PERSISTENCE));
 
     float amplitude = 1.0f;
     float frequency = 1.0f;
     float normalization = 0.0f;
     float total = 0.0f;
 
-    for (int o = 0; o < TERRAIN_OCTAVES; o++) {
+    for (int o = 0; o < Constants::TERRAIN_OCTAVES; o++) {
         const double noise = perlin.octave2D_01((xs * frequency), (ys * frequency), 4);
         total += noise * amplitude;
         normalization += amplitude;
         amplitude *= G;
-        frequency *= TERRAIN_LACUNARITY;
+        frequency *= Constants::TERRAIN_LACUNARITY;
     }
 
     total /= normalization;
-    return pow(total, TERRAIN_EXPONENTIATION) * TERRAIN_HEIGHT;
+    return pow(total, Constants::TERRAIN_EXPONENTIATION) * Constants::TERRAIN_HEIGHT;
 }

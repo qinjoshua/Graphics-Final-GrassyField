@@ -87,24 +87,19 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(m_width,m_height);    
 
     // Create our terrain
-    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(TERRAIN_BOX_SIZE,"./assets/textures/terrain2.ppm");
+    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(Constants::TERRAIN_BOX_SIZE,"./assets/textures/terrain2.ppm");
     myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
 
     // Create a node for our terrain 
     std::shared_ptr<SceneNode> terrainNode;
     terrainNode = std::make_shared<SceneNode>(myTerrain,"./shaders/vert.glsl","./shaders/frag.glsl");
 
-    // Create our grass
-    std::shared_ptr<Object> myGrass = std::make_shared<Object>();
-    std::shared_ptr<SceneNode> grassNode;
-    grassNode = std::make_shared<SceneNode>();
-
     // Set our SceneTree up
     renderer->setRoot(terrainNode);
 
     // Set a default position for our camera
-    float initialEyesYPOS = myTerrain->ComputeHeight(PLAYER_START_X_POS, PLAYER_START_Z_POS);
-    renderer->GetCamera(0)->SetCameraEyePosition(PLAYER_START_X_POS,initialEyesYPOS + EYES_HEIGHT, PLAYER_START_Z_POS);
+    float initialEyesYPOS = myTerrain->ComputeHeight(Constants::PLAYER_START_X_POS, Constants::PLAYER_START_Z_POS);
+    renderer->GetCamera(0)->SetCameraEyePosition(Constants::PLAYER_START_X_POS,initialEyesYPOS + Constants::EYES_HEIGHT, Constants::PLAYER_START_Z_POS);
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
     bool quit = false;
@@ -125,7 +120,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
 
     // While application is running
-    while(!quit){
+    while (!quit) {
         // For our terrain setup the identity transform each frame
         // By default set the terrain node to the identity
         // matrix.
@@ -134,14 +129,14 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         callback();
 
         //Handle events on queue
-        while(SDL_PollEvent( &e ) != 0){
+        while (SDL_PollEvent(&e) != 0) {
             // User posts an event to quit
             // An example is hitting the "x" in the corner of the window.
-            if(e.type == SDL_QUIT){
+            if (e.type == SDL_QUIT) {
                 quit = true;
             }
             // Handle keyboad input for the camera class
-            if(e.type==SDL_MOUSEMOTION){
+            if (e.type == SDL_MOUSEMOTION) {
                 // Handle mouse movements
                 int mouseX = e.motion.x;
                 int mouseY = e.motion.y;
@@ -150,30 +145,108 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         } // End SDL_PollEvent loop.
 
         // Move left or right
-        if(keyboardState[SDL_SCANCODE_LEFT]){
+        if (keyboardState[SDL_SCANCODE_LEFT]) {
             //renderer->GetCamera(0)->MoveLeft(cameraSpeed);
             renderer->GetCamera(0)->WalkLeft(cameraSpeed, myTerrain);
-        }else if(keyboardState[SDL_SCANCODE_RIGHT]){
+        }
+        else if (keyboardState[SDL_SCANCODE_RIGHT]) {
             //renderer->GetCamera(0)->MoveRight(cameraSpeed);
             renderer->GetCamera(0)->WalkRight(cameraSpeed, myTerrain);
         }
 
         // Move forward or back
-        if(keyboardState[SDL_SCANCODE_UP]){
+        if (keyboardState[SDL_SCANCODE_UP]) {
             //renderer->GetCamera(0)->MoveForward(cameraSpeed);
             renderer->GetCamera(0)->WalkForward(cameraSpeed, myTerrain);
-        }else if(keyboardState[SDL_SCANCODE_DOWN]){
+        }
+        else if (keyboardState[SDL_SCANCODE_DOWN]) {
             //renderer->GetCamera(0)->MoveBackward(cameraSpeed);
             renderer->GetCamera(0)->WalkBackward(cameraSpeed, myTerrain);
         }
 
         // Move up or down
-        if(keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT])   {
+        /*if(keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT])   {
             renderer->GetCamera(0)->MoveUp(cameraSpeed);
         }else if(keyboardState[SDL_SCANCODE_LCTRL] || keyboardState[SDL_SCANCODE_RCTRL]){
             renderer->GetCamera(0)->MoveDown(cameraSpeed);
+        }*/
+
+        int TERRAIN_SCALE_CODE = SDL_SCANCODE_0;
+        int TERRAIN_PERSISTENCE_CODE = SDL_SCANCODE_1;
+        int TERRAIN_OCTAVES_CODE = SDL_SCANCODE_2;
+        int TERRAIN_LACUNARITY_CODE = SDL_SCANCODE_3;
+        int TERRAIN_EXPONENTIATION_CODE = SDL_SCANCODE_4;
+        int TERRAIN_HEIGHT_CODE = SDL_SCANCODE_5;
+
+        bool terrainChanged = false;
+
+        if (keyboardState[TERRAIN_SCALE_CODE]) {
+            if (keyboardState[SDL_SCANCODE_RSHIFT]) {
+                Constants::TERRAIN_SCALE += 25;
+                terrainChanged = true;
+            }
+            if (keyboardState[SDL_SCANCODE_LSHIFT] && Constants::TERRAIN_SCALE > 25) {
+                Constants::TERRAIN_SCALE -= 25;
+                terrainChanged = true;
+            }
         }
-		
+        else if (keyboardState[TERRAIN_PERSISTENCE_CODE]) {
+            if (keyboardState[SDL_SCANCODE_RSHIFT]) {
+                Constants::TERRAIN_PERSISTENCE += 0.1;
+                terrainChanged = true;
+            }
+            if (keyboardState[SDL_SCANCODE_LSHIFT] && Constants::TERRAIN_PERSISTENCE > 0) {
+                Constants::TERRAIN_PERSISTENCE -= 0.1;
+                terrainChanged = true;
+            }
+        }
+        else if (keyboardState[TERRAIN_OCTAVES_CODE]) {
+            if (keyboardState[SDL_SCANCODE_RSHIFT]) {
+                Constants::TERRAIN_OCTAVES += 1;
+                terrainChanged = true;
+            }
+            if (keyboardState[SDL_SCANCODE_LSHIFT] && Constants::TERRAIN_OCTAVES > 1) {
+                Constants::TERRAIN_OCTAVES -= 1;
+                terrainChanged = true;
+            }
+        }
+        else if (keyboardState[TERRAIN_LACUNARITY_CODE]) {
+            if (keyboardState[SDL_SCANCODE_RSHIFT]) {
+                Constants::TERRAIN_LACUNARITY += 0.1;
+                terrainChanged = true;
+            }
+            if (keyboardState[SDL_SCANCODE_LSHIFT]) {
+                Constants::TERRAIN_LACUNARITY -= 0.1;
+                terrainChanged = true;
+            }
+        }
+        else if (keyboardState[TERRAIN_EXPONENTIATION_CODE]) {
+            if (keyboardState[SDL_SCANCODE_RSHIFT]) {
+                Constants::TERRAIN_EXPONENTIATION += 0.25;
+                terrainChanged = true;
+            }
+            if (keyboardState[SDL_SCANCODE_LSHIFT]) {
+                Constants::TERRAIN_EXPONENTIATION -= 0.25;
+                terrainChanged = true;
+            }
+        }
+        else if (keyboardState[TERRAIN_HEIGHT_CODE]) {
+            if (keyboardState[SDL_SCANCODE_RSHIFT]) {
+                Constants::TERRAIN_HEIGHT += 50;
+                terrainChanged = true;
+            }
+            if (keyboardState[SDL_SCANCODE_LSHIFT]) {
+                Constants::TERRAIN_HEIGHT -= 50;
+                terrainChanged = true;
+            }
+        }
+
+        if (terrainChanged) {
+            std::cout << Constants::TERRAIN_OCTAVES << std::endl;
+            myTerrain->LoadHeightMap();
+            myTerrain->Init();
+        }
+
         std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
 
         // Update the terrain based on the camera location
