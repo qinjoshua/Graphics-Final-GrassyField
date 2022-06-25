@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <string>
+#include <future>
 #include <PerlinNoise/PerlinNoise.hpp>
 
 class Terrain : public Object {
@@ -64,6 +65,8 @@ private:
 
     int ToActualXPosition(int x);
     int ToActualZPosition(int z);
+
+    std::future<void> fut;
 
     void UpdateHeightMap(int xOffset, int zOffset);
 };

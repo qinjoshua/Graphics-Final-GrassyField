@@ -3,6 +3,7 @@
 #include "Image.hpp"
 
 #include <iostream>
+#include <future>
 #include <math.h>
 
 // Constructor for our object
@@ -114,9 +115,9 @@ void Terrain::LoadHeightMap(){
 void Terrain::UpdateHeightMap(int xOffset, int zOffset) {
     
     int xLower = xOffset > 0 ? xOffset * m_boxWidth : 0;
-    int xUpper = xOffset < 0 ? m_renderAreaWidth + xOffset * m_boxWidth : m_renderAreaWidth;
+    int xUpper = xOffset < 0 ? (int)m_renderAreaWidth + xOffset * (int)m_boxWidth : m_renderAreaWidth;
     int zLower = zOffset > 0 ? zOffset * m_boxWidth : 0;
-    int zUpper = zOffset < 0 ? m_renderAreaWidth + zOffset * m_boxWidth : m_renderAreaWidth;
+    int zUpper = zOffset < 0 ? (int)m_renderAreaWidth + zOffset * (int)m_boxWidth : m_renderAreaWidth;
     
     // temporary heightData to cache values
     float* heightData = new float[m_boxWidth * m_boxWidth * 9];
@@ -124,12 +125,12 @@ void Terrain::UpdateHeightMap(int xOffset, int zOffset) {
     for (unsigned int z = 0; z < m_renderAreaWidth; ++z) {
         for (unsigned int x = 0; x < m_renderAreaWidth; ++x) {
             // This means that this point is in the old array - no need to recalculate
-            /*if (x >= xLower && x < xUpper && z >= zLower && z < zUpper) {
-                heightData[x + (z * m_renderAreaWidth)] = m_heightData[(x-xOffset) + ((z-zOffset) * m_renderAreaWidth)];
+            if (x >= xLower && x < xUpper && z >= zLower && z < zUpper) {
+                heightData[x + (z * m_renderAreaWidth)] = m_heightData[(x-(xOffset * (int)m_boxWidth)) + ((z-(zOffset * (int)m_boxWidth)) * m_renderAreaWidth)];
             }
-            else {*/
+            else {
                 heightData[x + (z * m_renderAreaWidth)] = ComputeHeight(ToActualXPosition(x), ToActualZPosition(z));
-            //}
+            }
         }
     }
 
@@ -167,6 +168,9 @@ void Terrain::MoveCamera(int x, int z) {
         m_boxXIndex = boxXIndex;
         m_boxZIndex = boxZIndex;
         UpdateHeightMap(xOffset, zOffset);
+        
+        //fut.wait();
+        //fut = std::async(std::launch::async, [&]{ Init(); });
         Init();
     }
 }
