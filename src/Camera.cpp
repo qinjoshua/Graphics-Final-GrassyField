@@ -79,7 +79,7 @@ void Camera::MoveRight(float speed){
 void Camera::WalkForward(float speed, std::shared_ptr<Terrain> terrain_ptr){
     // Calculate the height variation
     float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x + m_viewDirection.x * speed, m_eyePosition.z + m_viewDirection.z * speed);
-    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+    float deltaY = terrainHeight + Constants::EYES_HEIGHT - m_eyePosition.y;
 
     // Move the camera in the view direction
     glm::vec3 direction(m_viewDirection.x, 1.0f,m_viewDirection.z);
@@ -92,7 +92,7 @@ void Camera::WalkForward(float speed, std::shared_ptr<Terrain> terrain_ptr){
 void Camera::WalkBackward(float speed, std::shared_ptr<Terrain> terrain_ptr){
     //Calculate the height variation
     float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x - m_viewDirection.x * speed, m_eyePosition.z - m_viewDirection.z * speed);
-    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+    float deltaY = terrainHeight + Constants::EYES_HEIGHT - m_eyePosition.y;
 
     // Move the camera in the view direction
     glm::vec3 direction(- m_viewDirection.x,1.0f, - m_viewDirection.z);
@@ -108,7 +108,7 @@ void Camera::WalkLeft(float speed, std::shared_ptr<Terrain> terrain_ptr){
     glm::vec3 rightVector = glm::cross(m_viewDirection, m_upVector);
     // Calculate the height variation
     float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x - rightVector.x * speed, m_eyePosition.z - rightVector.z * speed);
-    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+    float deltaY = terrainHeight + Constants::EYES_HEIGHT - m_eyePosition.y;
     // Move in the direction along the
     glm::vec3 direction(-rightVector.x, 1.0,-rightVector.z);
     // Update the speed
@@ -122,7 +122,7 @@ void Camera::WalkRight(float speed, std::shared_ptr<Terrain> terrain_ptr){
     glm::vec3 rightVector = glm::cross(m_viewDirection, m_upVector);
     // Calculate the height variation
     float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x + rightVector.x * speed, m_eyePosition.z + rightVector.z * speed);
-    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+    float deltaY = terrainHeight + Constants::EYES_HEIGHT - m_eyePosition.y;
     // Move in the direction along the
     glm::vec3 direction(rightVector.x,1.0,rightVector.z);
     // Update the speed
