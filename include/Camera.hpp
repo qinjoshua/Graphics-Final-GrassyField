@@ -11,8 +11,9 @@
 #define CAMERA_HPP
 
 #include "glm/glm.hpp"
-#include "Terrain.hpp"
 #include<iostream>
+
+class Terrain;
 
 class Camera{
 public:
@@ -29,10 +30,10 @@ public:
     void MoveRight(float speed);
     void MoveUp(float speed);
     void MoveDown(float speed);
-    void WalkForward(float speed,  std::shared_ptr<Terrain> terrain_ptr);
-    void WalkBackward(float speed, std::shared_ptr<Terrain> terrain_ptr);
-    void WalkLeft(float speed, std::shared_ptr<Terrain> terrain_ptr);
-    void WalkRight(float speed, std::shared_ptr<Terrain> terrain_ptr);
+    void WalkForward(float speed,  float terrainHeight);
+    void WalkBackward(float speed, float terrainHeight);
+    void WalkLeft(float speed, float terrainHeight);
+    void WalkRight(float speed, float terrainHeight);
     // Set the position for the camera
     void SetCameraEyePosition(float x, float y, float z);
     // Returns the Camera X Position where the eye is 
