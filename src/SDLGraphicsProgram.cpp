@@ -279,7 +279,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
 
         // Update the terrain based on the camera location
-        //myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
+        myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
 
         // Update our scene through our renderer
         renderer->Update();
