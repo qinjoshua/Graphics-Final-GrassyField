@@ -171,6 +171,7 @@ void Terrain::MoveCamera(int x, int z) {
     int zOffset = (int)m_boxZIndex - (int)boxZIndex;
 
     if (xOffset != 0 || zOffset != 0) {
+        std::cout << "Hi I'm here" << std::endl;
         m_boxXIndex = boxXIndex;
         m_boxZIndex = boxZIndex;
         UpdateHeightMap(xOffset, zOffset);
