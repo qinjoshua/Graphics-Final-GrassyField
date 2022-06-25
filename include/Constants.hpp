@@ -9,9 +9,11 @@
 
 #include <stdint.h>
 
+
 class Constants {
 public:
 	static /*const*/ inline float TERRAIN_UNIT_SIZE = 5;
+
 
 	static /*const*/ inline uint8_t TERRAIN_SEED = 123456u;
 	static /*const*/ inline float TERRAIN_SCALE = 500;

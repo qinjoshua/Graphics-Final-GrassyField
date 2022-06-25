@@ -46,7 +46,11 @@ void main()
     
     // Store our final texture color
     vec3 diffuseColor   = texture(u_DiffuseMap, v_texCoord).rgb;
-//    vec3 detailColor    = texture(u_DetailMap,  v_texCoord).rgb;
+
+
+    //vec3 diffuseColor = vec3((107.0)/255.0, (192.0)/255.0, 30.0/255.0);
+    //vec3 diffuseColor = vec3((50 + 180.0 * (FragPos.y / 150))/255.0, (130.0 + 120.0 * (FragPos.y / 150.0))/255.0, 0.0 * (FragPos.y / 150)/255.0);
+// vec3 detailColor    = texture(u_DetailMap,  v_texCoord).rgb;
 
 	// Store our final lighting computation
 	vec3 Lighting = vec3(0.0,0.0,0.0);
