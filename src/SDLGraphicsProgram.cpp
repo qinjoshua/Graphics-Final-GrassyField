@@ -94,7 +94,10 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     std::shared_ptr<SceneNode> terrainNode;
     terrainNode = std::make_shared<SceneNode>(myTerrain,"./shaders/vert.glsl","./shaders/frag.glsl");
 
-
+    // Create our grass
+    std::shared_ptr<Object> myGrass = std::make_shared<Object>();
+    std::shared_ptr<SceneNode> grassNode;
+    grassNode = std::make_shared<SceneNode>();
 
     // Set our SceneTree up
     renderer->setRoot(terrainNode);
