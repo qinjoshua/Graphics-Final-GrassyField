@@ -115,14 +115,14 @@ SkyBox::SkyBox() {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);*/
 
-    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
-    m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
-    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+    m_geometry.AddVertex(-1.0f * BOX_SIZE, -1.0f * BOX_SIZE, 1.0f * BOX_SIZE);
+    m_geometry.AddVertex(1.0f * BOX_SIZE, -1.0f * BOX_SIZE, 1.0f * BOX_SIZE);
+    m_geometry.AddVertex(1.0f * BOX_SIZE, -1.0f * BOX_SIZE, -1.0f * BOX_SIZE);
+    m_geometry.AddVertex(-1.0f * BOX_SIZE, -1.0f * BOX_SIZE, -1.0f * BOX_SIZE);
+    m_geometry.AddVertex(-1.0f * BOX_SIZE, 1.0f * BOX_SIZE, 1.0f * BOX_SIZE);
+    m_geometry.AddVertex(1.0f * BOX_SIZE, 1.0f * BOX_SIZE, 1.0f * BOX_SIZE);
+    m_geometry.AddVertex(1.0f * BOX_SIZE, 1.0f * BOX_SIZE, -1.0f * BOX_SIZE);
+    m_geometry.AddVertex(-1.0f * BOX_SIZE, 1.0f * BOX_SIZE, -1.0f * BOX_SIZE);
 
     // Right Image
     m_geometry.AddIndex(1);
@@ -197,8 +197,10 @@ void SkyBox::UpdateShader(Shader* m_shader, glm::mat4 projectionMatrix, Camera* 
     std::cout << "Updating Sky Box" << std::endl;
     m_shader->Bind();
     m_shader->SetUniform1i("skybox", 0);
-    //m_shader->SetUniformMatrix4fv("view", glm::mat4(glm::mat3(&camera->GetWorldToViewmatrix()))[0][0]);
-    m_shader->SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
+    //glm::mat3 temp_mat3;
+    //glm::glm_mat4_pick3(camera->GetWorldToViewmatrix(), temp_mat3);
+    m_shader->SetUniformMatrix4fv("view", &glm::mat4(glm::mat3(camera->GetWorldToViewmatrix()))[0][0]);
+    //m_shader->SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
     m_shader->SetUniformMatrix4fv("projection", &projectionMatrix[0][0]);
 }
 

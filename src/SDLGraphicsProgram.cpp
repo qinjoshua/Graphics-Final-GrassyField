@@ -88,7 +88,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
     // Create our skybox
     std::shared_ptr<SkyBox> sky = std::make_shared<SkyBox>();
-    sky->LoadTexture("./assets/textures/skybox/");
+    sky->LoadTexture("./assets/textures/");
 
     // Create our terrain
     std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(512,512,"./assets/textures/terrain2.ppm");
@@ -102,11 +102,11 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     terrainNode = std::make_shared<SceneNode>(myTerrain,"./shaders/vert.glsl","./shaders/frag.glsl");
 
     // Set our SceneTree up
-    renderer->setRoot(skyNode);
-    //terrainNode->AddChild(skyNode.get());
+    renderer->setRoot(terrainNode);
+    terrainNode->AddChild(skyNode.get());
 
     // Set a default position for our camera
-    renderer->GetCamera(0)->SetCameraEyePosition(125.0f,50.0f,500.0f);
+    renderer->GetCamera(0)->SetCameraEyePosition(1.0f,1.0f,1.0f);
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
     bool quit = false;
