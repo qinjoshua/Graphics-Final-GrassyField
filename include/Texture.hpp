@@ -22,12 +22,14 @@ public:
     ~Texture();
 	// Loads and sets up an actual texture
     void LoadTexture(const std::string filepath);
+    void LoadSkyBoxTexture(const std::string filepath);
 	// slot tells us which slot we want to bind to.
     // We can have multiple slots. By default, we
     // will set our slot to 0 if it is not specified.
     void Bind(unsigned int slot=0) const;
     // Be done with our texture
     void Unbind();
+    GLuint GetID(){ return m_textureID;};
 private:
     // Store a unique ID for the texture
     GLuint m_textureID;

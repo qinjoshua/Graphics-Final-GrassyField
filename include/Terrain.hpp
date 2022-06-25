@@ -14,11 +14,15 @@
 #include "Shader.hpp"
 #include "Image.hpp"
 #include "Object.hpp"
+#include "Camera.hpp"
+#include "Transform.hpp"
 
 #include <vector>
 #include <string>
 #include <future>
 #include <PerlinNoise/PerlinNoise.hpp>
+#include "glm/vec3.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 class Terrain : public Object {
 public:
@@ -33,7 +37,7 @@ public:
     void LoadHeightMap();
     // Load textures
     void LoadTextures(std::string colormap, std::string detailmap);
-
+    void UpdateShader(Shader* m_shader, glm::mat4 projectionMatrix, Camera* camera, Transform m_worldTransform);
     // Computes the height of a given x and y coordinate
     float ComputeHeight(int x, int y);
 
