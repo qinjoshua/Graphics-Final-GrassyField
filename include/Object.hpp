@@ -19,6 +19,8 @@
 #include "Texture.hpp"
 #include "Transform.hpp"
 #include "Geometry.hpp"
+#include "Camera.hpp"
+#include "Shader.hpp"
 
 #include "glm/vec3.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -41,6 +43,9 @@ public:
     virtual void Render();
 	// Helper method for when we are ready to draw or update our object
 	void Bind();
+
+    virtual void UpdateShader(Shader* m_shader, glm::mat4 projectionMatrix, Camera* camera, Transform m_worldTransform);
+
 protected: // Classes that inherit from Object are intended to be overriden.
 
     // For now we have one buffer per object.

@@ -1,10 +1,15 @@
 #include "SkyBox.hpp"
 #include "Constants.hpp"
 #include "Image.hpp"
+#include "Camera.hpp"
+#include "Transform.hpp"
+#include "Shader.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <PerlinNoise/PerlinNoise.hpp>
+#include "glm/vec3.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 // Constructor for our object
 // Calls the initialization method
@@ -56,7 +61,7 @@ SkyBox::SkyBox() {
 
     //m_geometry.GenVertices();
 
-    float skyboxVertices[] = {
+    /*float skyboxVertices[] = {
         // positions          
         -1.0f,  1.0f, -1.0f,
         -1.0f, -1.0f, -1.0f,
@@ -108,7 +113,72 @@ SkyBox::SkyBox() {
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);*/
+
+    m_geometry.AddVertex(-1.0f, -1.0f, 1.0f);
+    m_geometry.AddVertex(1.0f, -1.0f, 1.0f);
+    m_geometry.AddVertex(1.0f, -1.0f, -1.0f);
+    m_geometry.AddVertex(-1.0f, -1.0f, -1.0f);
+    m_geometry.AddVertex(-1.0f, 1.0f, 1.0f);
+    m_geometry.AddVertex(1.0f, 1.0f, 1.0f);
+    m_geometry.AddVertex(1.0f, 1.0f, -1.0f);
+    m_geometry.AddVertex(-1.0f, 1.0f, -1.0f);
+
+    // Right Image
+    m_geometry.AddIndex(1);
+    m_geometry.AddIndex(2);
+    m_geometry.AddIndex(6);
+    m_geometry.AddIndex(6);
+    m_geometry.AddIndex(5);
+    m_geometry.AddIndex(1);
+
+    //Left Image
+    m_geometry.AddIndex(0);
+    m_geometry.AddIndex(4);
+    m_geometry.AddIndex(7);
+    m_geometry.AddIndex(7);
+    m_geometry.AddIndex(3);
+    m_geometry.AddIndex(0);
+
+    // Top Image
+    m_geometry.AddIndex(4);
+    m_geometry.AddIndex(5);
+    m_geometry.AddIndex(6);
+    m_geometry.AddIndex(6);
+    m_geometry.AddIndex(7);
+    m_geometry.AddIndex(4);
+
+    // Botttom Image
+    m_geometry.AddIndex(0);
+    m_geometry.AddIndex(3);
+    m_geometry.AddIndex(2);
+    m_geometry.AddIndex(2);
+    m_geometry.AddIndex(1);
+    m_geometry.AddIndex(0);
+
+    // Front Image
+    m_geometry.AddIndex(0);
+    m_geometry.AddIndex(1);
+    m_geometry.AddIndex(5);
+    m_geometry.AddIndex(5);
+    m_geometry.AddIndex(4);
+    m_geometry.AddIndex(0);
+
+    // Back Image
+    m_geometry.AddIndex(3);
+    m_geometry.AddIndex(7);
+    m_geometry.AddIndex(6);
+    m_geometry.AddIndex(6);
+    m_geometry.AddIndex(2);
+    m_geometry.AddIndex(3);
+
+    m_geometry.GenVertices();
+
+    m_vertexBufferLayout.CreatePositionBufferLayout(m_geometry.GetBufferDataSize(),
+                                                    m_geometry.GetIndicesSize(),
+                                                    m_geometry.GetBufferDataPtr(),
+                                                    m_geometry.GetIndicesDataPtr());
+
 }
 
 // Destructor
@@ -119,16 +189,33 @@ SkyBox::~SkyBox(){
     }*/
 }
 
+void SkyBox::LoadTexture(std::string fileName) {
+    m_textureDiffuse.LoadSkyBoxTexture(fileName);
+}
+
+void SkyBox::UpdateShader(Shader* m_shader, glm::mat4 projectionMatrix, Camera* camera, Transform m_worldTransform) {
+    std::cout << "Updating Sky Box" << std::endl;
+    m_shader->Bind();
+    m_shader->SetUniform1i("skybox", 0);
+    //m_shader->SetUniformMatrix4fv("view", glm::mat4(glm::mat3(&camera->GetWorldToViewmatrix()))[0][0]);
+    m_shader->SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
+    m_shader->SetUniformMatrix4fv("projection", &projectionMatrix[0][0]);
+}
+
 void SkyBox::Render() {
+    std::cout << "I'm rendering in Sky Box" << std::endl;
     Bind();
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texturedID);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureDiffuse.GetID());
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
 }
 
 
-void SkyBox::MakeTexturedQuad(std::string fileName) {
+
+
+/*void SkyBox::MakeTexturedQuad(std::string fileName) {
     uint8_t fileExtensionStart = fileName.find(".");
     if (fileExtensionStart) {
         fileName = fileName.substr(0, fileExtensionStart);
@@ -183,4 +270,4 @@ void SkyBox::LoadSkyBox(std::vector<std::string> faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     texturedID = textureID;
-}
+}*/

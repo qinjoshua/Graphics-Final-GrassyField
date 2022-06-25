@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 #include <fstream>
 #include <iostream>
@@ -73,6 +74,48 @@ void Texture::LoadTexture(const std::string filepath){
     glGenerateMipmap(GL_TEXTURE_2D);                        
 	// We are done with our texture data so we can unbind.    
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture::LoadSkyBoxTexture(const std::string filepath) {
+    m_filepath = filepath;
+
+    std::vector<std::string> faces;
+    faces.push_back(filepath + "right.ppm");
+    faces.push_back(filepath + "left.ppm");
+    faces.push_back(filepath + "top.ppm");
+    faces.push_back(filepath + "back.ppm");
+    faces.push_back(filepath + "front.ppm");
+    faces.push_back(filepath + "back.ppm");
+
+    glGenTextures(1, &m_textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    for (unsigned int ii = 0; ii < faces.size(); ii++) {
+        Image* faceImage = new Image(faces[ii].c_str());
+        //allImage_ptr.push_back(faceImage);
+        faceImage->LoadPPM(true);
+
+        if (faceImage)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + ii,
+                         0, GL_RGB, faceImage->GetWidth(), faceImage->GetHeight(), 0,
+                         GL_RGB, GL_UNSIGNED_BYTE, faceImage->GetPixelDataPtr());
+        }
+        else
+        {
+            std::cout << "Cubemap tex failed to load at path: " << faces[ii] << std::endl;
+        }
+
+        // Delete our image
+        if (faceImage != nullptr) {
+            delete faceImage;
+        }
+    }
 }
 
 

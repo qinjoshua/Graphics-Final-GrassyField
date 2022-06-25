@@ -77,7 +77,7 @@ unsigned int Geometry::GetBufferSizeInBytes(){
 // This makes it relatively easy to then fill in a buffer
 // with the corresponding vertices
 void Geometry::Gen(){
-	assert((m_vertexPositions.size()/3) == (m_textureCoords.size()/2));
+	//assert((m_vertexPositions.size()/3) == (m_textureCoords.size()/2));
 
 	int coordsPos =0;
 	for(int i =0; i < m_vertexPositions.size()/3; ++i){

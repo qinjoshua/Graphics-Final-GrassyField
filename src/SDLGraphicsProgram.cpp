@@ -88,22 +88,22 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
     // Create our skybox
     std::shared_ptr<SkyBox> sky = std::make_shared<SkyBox>();
-    sky->MakeTexturedQuad("./assets/textures/skybox/");
+    sky->LoadTexture("./assets/textures/skybox/");
 
     // Create our terrain
     std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(512,512,"./assets/textures/terrain2.ppm");
     myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
 
     std::shared_ptr<SceneNode> skyNode;
-    skyNode = std::make_shared<SceneNode>(sky, "./shaders/skyBoxVert.glsl", "./shaders/skyBoxFrag.glsl");
+    skyNode = std::make_shared<SceneNode>(sky, "./shaders/skyboxVert.glsl", "./shaders/skyboxFrag.glsl");
 
     // Create a node for our terrain 
     std::shared_ptr<SceneNode> terrainNode;
     terrainNode = std::make_shared<SceneNode>(myTerrain,"./shaders/vert.glsl","./shaders/frag.glsl");
 
     // Set our SceneTree up
-    renderer->setRoot(terrainNode);
-    terrainNode->AddChild(skyNode.get());
+    renderer->setRoot(skyNode);
+    //terrainNode->AddChild(skyNode.get());
 
     // Set a default position for our camera
     renderer->GetCamera(0)->SetCameraEyePosition(125.0f,50.0f,500.0f);
