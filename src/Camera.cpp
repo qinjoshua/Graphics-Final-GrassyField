@@ -1,4 +1,6 @@
 #include "Camera.hpp"
+#include "Terrain.hpp"
+#include "Constants.hpp"
 
 #include "glm/gtx/transform.hpp"
 
@@ -70,6 +72,61 @@ void Camera::MoveRight(float speed){
     glm::vec3 direction(rightVector.x,0.0,rightVector.z);
     // Update the speed
     direction = direction * speed;
+    // Update the eye position
+    m_eyePosition += direction;
+}
+
+void Camera::WalkForward(float speed, std::shared_ptr<Terrain> terrain_ptr){
+    // Calculate the height variation
+    float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x + m_viewDirection.x * speed, m_eyePosition.z + m_viewDirection.z * speed);
+    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+
+    // Move the camera in the view direction
+    glm::vec3 direction(m_viewDirection.x, 1.0f,m_viewDirection.z);
+    // Move in the speed
+    direction = direction * glm::vec3(speed, deltaY, speed);
+    // Update the position
+    m_eyePosition += direction;
+}
+
+void Camera::WalkBackward(float speed, std::shared_ptr<Terrain> terrain_ptr){
+    //Calculate the height variation
+    float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x - m_viewDirection.x * speed, m_eyePosition.z - m_viewDirection.z * speed);
+    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+
+    // Move the camera in the view direction
+    glm::vec3 direction(- m_viewDirection.x,1.0f, - m_viewDirection.z);
+    // Move in the speed
+    direction = direction * glm::vec3(speed, deltaY, speed);
+    // Update the position
+    m_eyePosition += direction;
+}
+
+// Move along the 'right vector'
+void Camera::WalkLeft(float speed, std::shared_ptr<Terrain> terrain_ptr){
+    // Compute the rightVector
+    glm::vec3 rightVector = glm::cross(m_viewDirection, m_upVector);
+    // Calculate the height variation
+    float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x - rightVector.x * speed, m_eyePosition.z - rightVector.z * speed);
+    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+    // Move in the direction along the
+    glm::vec3 direction(-rightVector.x, 1.0,-rightVector.z);
+    // Update the speed
+    direction = direction * glm::vec3(speed, deltaY, speed);
+    // Update the eye position
+    m_eyePosition += direction;
+}
+
+void Camera::WalkRight(float speed, std::shared_ptr<Terrain> terrain_ptr){
+    // Compute the rightVector
+    glm::vec3 rightVector = glm::cross(m_viewDirection, m_upVector);
+    // Calculate the height variation
+    float terrainHeight = terrain_ptr->ComputeHeight(m_eyePosition.x + rightVector.x * speed, m_eyePosition.z + rightVector.z * speed);
+    float deltaY = terrainHeight + EYES_HEIGHT - m_eyePosition.y;
+    // Move in the direction along the
+    glm::vec3 direction(rightVector.x,1.0,rightVector.z);
+    // Update the speed
+    direction = direction * glm::vec3(speed, deltaY, speed);
     // Update the eye position
     m_eyePosition += direction;
 }

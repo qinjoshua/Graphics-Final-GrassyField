@@ -1,6 +1,6 @@
 /** @file Terrain.hpp
  *  @brief Create a terrain
- *  
+ *
  *  More...
  *
  *  @author Mike
@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <string>
+#include <future>
 #include <PerlinNoise/PerlinNoise.hpp>
 #include "glm/vec3.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -26,7 +27,7 @@
 class Terrain : public Object {
 public:
     // Takes in a Terrain and a filename for the heightmap.
-    Terrain (unsigned int xSegs, unsigned int zSegs, std::string fileName);
+    Terrain (unsigned int boxWidth, std::string fileName);
     // Destructor
     ~Terrain ();
     // override the initilization routine.
@@ -36,28 +37,42 @@ public:
     void LoadHeightMap();
     // Load textures
     void LoadTextures(std::string colormap, std::string detailmap);
-
     void UpdateShader(Shader* m_shader, glm::mat4 projectionMatrix, Camera* camera, Transform m_worldTransform);
+    // Computes the height of a given x and y coordinate
+    float ComputeHeight(int x, int y);
 
     // Moves the position of the camera to the given location
     void MoveCamera(int x, int y);
+
+    void ScrewBuffer();
 
 private:
     // data
     unsigned int m_xSegments;
     unsigned int m_zSegments;
 
-    int m_xOffset = 0;
-    int m_zOffset = 0;
+    unsigned int m_boxWidth;
+    unsigned int m_renderAreaWidth;
+
+    int m_xPos = 0;
+    int m_zPos = 0;
 
     // Store the height in a multidimensional array
     float* m_heightData;
 
-    // Computes the height of a given x and y coordinate
-    float ComputeHeight(int x, int y);
-
     const siv::PerlinNoise::seed_type seed = 123456u;
     const siv::PerlinNoise perlin{ seed };
+
+    // Stores the x and z indices of the box that the player is currently in
+    int m_boxXIndex;
+    int m_boxZIndex;
+
+    int ToActualXPosition(int x);
+    int ToActualZPosition(int z);
+
+    std::future<void> fut;
+
+    void UpdateHeightMap(int xOffset, int zOffset);
 };
 
 #endif

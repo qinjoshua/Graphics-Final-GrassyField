@@ -39,7 +39,7 @@ void Renderer::Update(){
     // Then perspective
     // Then the near and far clipping plane.
     // Note I cannot see anything closer than 0.1f units from the screen.
-    m_projectionMatrix = glm::perspective(45.0f,((float)m_screenWidth)/((float)m_screenHeight),0.1f,512.0f);
+    m_projectionMatrix = glm::perspective(45.0f,((float)m_screenWidth)/((float)m_screenHeight),0.1f,1024.0f);
 
     // Perform the update
     if(m_root!=nullptr){
@@ -73,7 +73,8 @@ void Renderer::Render(){
     glEnable(GL_TEXTURE_2D); 
     // This is the background of the screen.
     glViewport(0, 0, m_screenWidth, m_screenHeight);
-    glClearColor( 0.01f, 0.01f, 0.01f, 1.f );
+    //glClearColor(0.01f, 0.01f, 0.01f, 1.0f );
+    glClearColor( 0.39f, 0.72f, 0.96f, 1.f );
     // Clear color buffer and Depth Buffer
     // Remember that the 'depth buffer' is our
     // z-buffer that figures out how far away items are every frame

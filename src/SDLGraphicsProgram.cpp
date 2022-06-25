@@ -1,6 +1,7 @@
 #include "SDLGraphicsProgram.hpp"
 #include "Camera.hpp"
 #include "Terrain.hpp"
+#include "Constants.hpp"
 // Include the 'Renderer.hpp' which deteremines what
 // the graphics API is going to be for OpenGL
 #include "Renderer.hpp"
@@ -91,7 +92,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     sky->LoadTexture("./assets/textures/skybox/");
 
     // Create our terrain
-    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(512,512,"./assets/textures/terrain2.ppm");
+    std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(TERRAIN_BOX_SIZE,"./assets/textures/terrain2.ppm");
     myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
 
     std::shared_ptr<SceneNode> skyNode;
@@ -105,8 +106,10 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     renderer->setRoot(terrainNode);
     terrainNode->AddChild(skyNode.get());
 
-    // Set a default position for our camera
-    renderer->GetCamera(0)->SetCameraEyePosition(1.0f,1.0f,1.0f);
+ 
+    float initialEyesYPOS = myTerrain->ComputeHeight(PLAYER_START_X_POS, PLAYER_START_Z_POS);
+    renderer->GetCamera(0)->SetCameraEyePosition(PLAYER_START_X_POS,initialEyesYPOS + EYES_HEIGHT, PLAYER_START_Z_POS);
+
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
     bool quit = false;
@@ -153,16 +156,20 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
         // Move left or right
         if(keyboardState[SDL_SCANCODE_LEFT]){
-            renderer->GetCamera(0)->MoveLeft(cameraSpeed);
+            //renderer->GetCamera(0)->MoveLeft(cameraSpeed);
+            renderer->GetCamera(0)->WalkLeft(cameraSpeed, myTerrain);
         }else if(keyboardState[SDL_SCANCODE_RIGHT]){
-            renderer->GetCamera(0)->MoveRight(cameraSpeed);
+            //renderer->GetCamera(0)->MoveRight(cameraSpeed);
+            renderer->GetCamera(0)->WalkRight(cameraSpeed, myTerrain);
         }
 
         // Move forward or back
         if(keyboardState[SDL_SCANCODE_UP]){
-            renderer->GetCamera(0)->MoveForward(cameraSpeed);
+            //renderer->GetCamera(0)->MoveForward(cameraSpeed);
+            renderer->GetCamera(0)->WalkForward(cameraSpeed, myTerrain);
         }else if(keyboardState[SDL_SCANCODE_DOWN]){
-            renderer->GetCamera(0)->MoveBackward(cameraSpeed);
+            //renderer->GetCamera(0)->MoveBackward(cameraSpeed);
+            renderer->GetCamera(0)->WalkBackward(cameraSpeed, myTerrain);
         }
 
         // Move up or down
@@ -172,7 +179,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
             renderer->GetCamera(0)->MoveDown(cameraSpeed);
         }
 		
-        //std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
+        std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
 
         // Update the terrain based on the camera location
         //myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
