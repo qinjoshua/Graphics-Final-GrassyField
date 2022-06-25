@@ -34,6 +34,7 @@ public:
 	void AddIndex(unsigned int i);
     // Gen pushes all attributes into a single vector
 	void Gen();
+	void GenVertices();
 	// Functions for working with Indices
 	// Creates a triangle from 3 indicies
 	// When a triangle is made, the tangents and bi-tangents are also

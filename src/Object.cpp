@@ -1,6 +1,11 @@
 #include "Object.hpp"
 #include "Camera.hpp"
 #include "Error.hpp"
+#include "Transform.hpp"
+#include "Shader.hpp"
+
+#include "glm/vec3.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 
 Object::Object(){
@@ -16,6 +21,7 @@ Object::~Object(){
 void Object::LoadTexture(std::string fileName){
         // Load our actual textures
         m_textureDiffuse.LoadTexture(fileName);
+    //m_textureDiffuse.LoadSkyBoxTexture(fileName);
 }
 
 // Initialization of object as a 'quad'
@@ -76,6 +82,55 @@ void Object::Render(){
                    m_geometry.GetIndicesSize(), // The number of indicies, not triangles.
                    GL_UNSIGNED_INT,             // Make sure the data type matches
                         nullptr);               // Offset pointer to the data. 
-                                                // nullptr because we are currently bound
+                                                // nullptr because we are currently bound*
+}
+
+void Object::UpdateShader(Shader* m_shader, glm::mat4 projectionMatrix, Camera* camera, Transform m_worldTransform) {
+    std::cout << "I am updating in Sky Box" << std::endl;
+    /*// For our object, we apply the texture in the following way
+    // Note that we set the value to 0, because we have bound
+    // our texture to slot 0.
+    std::cout << "I am updating in Terrain" << std::endl;
+    m_shader->Bind();
+    m_shader->SetUniform1i("u_DiffuseMap",0);
+    // TODO: This assumes every SceneNode is a 'Terrain' so this shader setup code
+    //       needs to be moved preferably to 'Object' or 'Terrain'
+    m_shader->SetUniform1i("u_DetailMap",1);
+    // Set the MVP Matrix for our object
+    // Send it into our shader
+    m_shader->SetUniformMatrix4fv("model", &m_worldTransform.GetInternalMatrix()[0][0]);
+    m_shader->SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
+    m_shader->SetUniformMatrix4fv("projection", &projectionMatrix[0][0]);
+
+    // Create a 'light'
+    // Create a first 'light'
+    m_shader->SetUniform3f("pointLights[0].lightColor",1.0f,1.0f,1.0f);
+    m_shader->SetUniform3f("pointLights[0].lightPos",
+                           camera->GetEyeXPosition() + camera->GetViewXDirection(),
+                           camera->GetEyeYPosition() + camera->GetViewYDirection(),
+                           camera->GetEyeZPosition() + camera->GetViewZDirection());
+    m_shader->SetUniform1f("pointLights[0].ambientIntensity",0.9f);
+    m_shader->SetUniform1f("pointLights[0].specularStrength",0.5f);
+    m_shader->SetUniform1f("pointLights[0].constant",1.0f);
+    m_shader->SetUniform1f("pointLights[0].linear",0.003f);
+    m_shader->SetUniform1f("pointLights[0].quadratic",0.0f);
+
+    // Create a second light
+    m_shader->SetUniform3f("pointLights[1].lightColor",1.0f,0.0f,0.0f);
+    m_shader->SetUniform3f("pointLights[1].lightPos",
+                           camera->GetEyeXPosition() + camera->GetViewXDirection(),
+                           camera->GetEyeYPosition() + camera->GetViewYDirection(),
+                           camera->GetEyeZPosition() + camera->GetViewZDirection());
+    m_shader->SetUniform1f("pointLights[1].ambientIntensity",0.9f);
+    m_shader->SetUniform1f("pointLights[1].specularStrength",0.5f);
+    m_shader->SetUniform1f("pointLights[1].constant",1.0f);
+    m_shader->SetUniform1f("pointLights[1].linear",0.09f);
+    m_shader->SetUniform1f("pointLights[1].quadratic",0.032f);*/
+
+
+    /*m_shader->Bind();
+    m_shader->SetUniformMatrix4fv("skybox", 0);
+    m_shader->SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
+    m_shader->SetUniformMatrix4fv("projection", &projectionMatrix[0][0]);*/
 }
 

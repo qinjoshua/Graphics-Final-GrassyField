@@ -25,5 +25,6 @@ static const int PLAYER_START_Z_POS = 100;
 static const int SPACE_HEIGHT = 128;
 static const int SPACE_WIDTH = 128;
 
+static const float BOX_SIZE = 900;
 
 #endif
