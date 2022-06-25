@@ -80,12 +80,12 @@ void Texture::LoadSkyBoxTexture(const std::string filepath) {
     m_filepath = filepath;
 
     std::vector<std::string> faces;
-    faces.push_back(filepath + "brick.ppm");
-    faces.push_back(filepath + "brick.ppm");
-    faces.push_back(filepath + "brick.ppm");
-    faces.push_back(filepath + "brick.ppm");
-    faces.push_back(filepath + "brick.ppm");
-    faces.push_back(filepath + "brick.ppm");
+    faces.push_back(filepath + "left.ppm");
+    faces.push_back(filepath + "right.ppm");
+    faces.push_back(filepath + "top.ppm");
+    faces.push_back(filepath + "back.ppm");
+    faces.push_back(filepath + "front.ppm");
+    faces.push_back(filepath + "back.ppm");
 
     glGenTextures(1, &m_textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);

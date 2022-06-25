@@ -17,6 +17,6 @@ static const uint8_t TERRAIN_OCTAVES = 1;
 static const float TERRAIN_LACUNARITY = 2.0;
 static const float TERRAIN_EXPONENTIATION = 2.0;
 static const float TERRAIN_HEIGHT = 300;
-static const float BOX_SIZE = 128;
+static const float BOX_SIZE = 900;
 
 #endif

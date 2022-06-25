@@ -88,7 +88,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
     // Create our skybox
     std::shared_ptr<SkyBox> sky = std::make_shared<SkyBox>();
-    sky->LoadTexture("./assets/textures/");
+    sky->LoadTexture("./assets/textures/skybox/");
 
     // Create our terrain
     std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(512,512,"./assets/textures/terrain2.ppm");
