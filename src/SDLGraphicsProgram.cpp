@@ -158,25 +158,56 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         // Move left or right
         if (keyboardState[SDL_SCANCODE_LEFT]) {
             //renderer->GetCamera(0)->MoveLeft(cameraSpeed);
+<<<<<<< HEAD
             renderer->GetCamera(0)->WalkLeft(cameraSpeed, myTerrain);
         }
         else if (keyboardState[SDL_SCANCODE_RIGHT]) {
+=======
+            float terrainHeight = myTerrain->ComputeHeight(renderer->GetCamera(0)->GetEyeXPosition()
+                                                           - renderer->GetCamera(0)->GetViewXDirection() * cameraSpeed,
+                                                           renderer->GetCamera(0)->GetEyeZPosition()
+                                                           - renderer->GetCamera(0)->GetViewZDirection() * cameraSpeed);
+            renderer->GetCamera(0)->WalkLeft(cameraSpeed, terrainHeight);
+        }else if(keyboardState[SDL_SCANCODE_RIGHT]){
+>>>>>>> 3ca4883... Fix dependency problem
             //renderer->GetCamera(0)->MoveRight(cameraSpeed);
-            renderer->GetCamera(0)->WalkRight(cameraSpeed, myTerrain);
+            float terrainHeight = myTerrain->ComputeHeight(renderer->GetCamera(0)->GetEyeXPosition()
+                                                           + renderer->GetCamera(0)->GetViewXDirection() * cameraSpeed,
+                                                           renderer->GetCamera(0)->GetEyeZPosition()
+                                                           + renderer->GetCamera(0)->GetViewZDirection() * cameraSpeed);
+            renderer->GetCamera(0)->WalkRight(cameraSpeed, terrainHeight);
         }
 
         // Move forward or back
         if (keyboardState[SDL_SCANCODE_UP]) {
             //renderer->GetCamera(0)->MoveForward(cameraSpeed);
+<<<<<<< HEAD
             renderer->GetCamera(0)->WalkForward(cameraSpeed, myTerrain);
         }
         else if (keyboardState[SDL_SCANCODE_DOWN]) {
+=======
+            float terrainHeight = myTerrain->ComputeHeight(renderer->GetCamera(0)->GetEyeXPosition()
+                    + renderer->GetCamera(0)->GetViewXDirection() * cameraSpeed,
+                    renderer->GetCamera(0)->GetEyeZPosition()
+                    + renderer->GetCamera(0)->GetViewZDirection() * cameraSpeed);
+            renderer->GetCamera(0)->WalkForward(cameraSpeed, terrainHeight);
+        }else if(keyboardState[SDL_SCANCODE_DOWN]){
+>>>>>>> 3ca4883... Fix dependency problem
             //renderer->GetCamera(0)->MoveBackward(cameraSpeed);
-            renderer->GetCamera(0)->WalkBackward(cameraSpeed, myTerrain);
+            float terrainHeight = myTerrain->ComputeHeight(renderer->GetCamera(0)->GetEyeXPosition()
+                                                           - renderer->GetCamera(0)->GetViewXDirection() * cameraSpeed,
+                                                           renderer->GetCamera(0)->GetEyeZPosition()
+                                                           - renderer->GetCamera(0)->GetViewZDirection() * cameraSpeed);
+            renderer->GetCamera(0)->WalkBackward(cameraSpeed, terrainHeight);
         }
 
         // Move up or down
+<<<<<<< HEAD
         /*if(keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT])   {
+=======
+        if(keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT])   {
+
+>>>>>>> 3ca4883... Fix dependency problem
             renderer->GetCamera(0)->MoveUp(cameraSpeed);
         }else if(keyboardState[SDL_SCANCODE_LCTRL] || keyboardState[SDL_SCANCODE_RCTRL]){
             renderer->GetCamera(0)->MoveDown(cameraSpeed);
