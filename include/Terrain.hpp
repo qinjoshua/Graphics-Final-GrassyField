@@ -36,7 +36,7 @@ public:
     // This then sets the heights of the terrain.
     void LoadHeightMap();
     // Load textures
-    void LoadTextures(std::string colormap, std::string detailmap);
+    void LoadTextures(std::string colormap);
     void UpdateShader(Shader* m_shader, glm::mat4 projectionMatrix, Camera* camera, Transform m_worldTransform);
     // Computes the height of a given x and y coordinate
     float ComputeHeight(int x, int y);

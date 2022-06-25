@@ -93,7 +93,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
     // Create our terrain
     std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(Constants::TERRAIN_BOX_SIZE,"./assets/textures/terrain2.ppm");
-    myTerrain->LoadTextures("./assets/textures/grasstexture.ppm","./assets/textures/detailmap.ppm");
+    myTerrain->LoadTextures("./assets/textures/grasstexture.ppm");
 
     std::shared_ptr<SceneNode> skyNode;
     skyNode = std::make_shared<SceneNode>(sky, "./shaders/skyboxVert.glsl", "./shaders/skyboxFrag.glsl");

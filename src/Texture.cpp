@@ -57,8 +57,14 @@ void Texture::LoadTexture(const std::string filepath){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	// Wrap mode describes what to do if we go outside the boundaries of
 	// texture.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
+    if (tile) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+    else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
 	// At this point, we are now ready to load and send some data to OpenGL.
 	glTexImage2D(GL_TEXTURE_2D,
 							0 ,
@@ -118,6 +124,9 @@ void Texture::LoadSkyBoxTexture(const std::string filepath) {
     }
 }
 
+void Texture::SetTile(bool tilingOn) {
+    tile = tilingOn;
+}
 
 // slot tells us which slot we want to bind to.
 // We can have multiple slots. By default, we

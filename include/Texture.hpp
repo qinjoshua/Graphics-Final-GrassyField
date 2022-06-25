@@ -23,6 +23,8 @@ public:
 	// Loads and sets up an actual texture
     void LoadTexture(const std::string filepath);
     void LoadSkyBoxTexture(const std::string filepath);
+
+    void SetTile(bool tilingOn);
 	// slot tells us which slot we want to bind to.
     // We can have multiple slots. By default, we
     // will set our slot to 0 if it is not specified.
@@ -37,6 +39,8 @@ private:
     std::string m_filepath;
     // Store whatever image data inside of our texture class.
     Image* m_image;
+    // Store whether or not the texture should tile or stretch
+    bool tile;
 };
 
 

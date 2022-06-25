@@ -70,15 +70,6 @@ void Terrain::Init(){
         }
     }
 
-    /*for(unsigned int z=m_BoxZPos - Box_Size; z < m_BoxZPos + Box_Size * 2; ++z){
-        for(unsigned int x =0; x < m_renderAreaWidth; ++x){
-            float u = 1.0f - ((float)x/(float)m_renderAreaWidth);
-            float v = 1.0f - ((float)z/(float)m_renderAreaWidth);
-            // Calculate the correct position and add the texture coordinates
-            m_geometry.AddVertex(x * TERRAIN_UNIT_SIZE + m_xOffset * TERRAIN_UNIT_SIZE, m_heightData[x+z*m_renderAreaWidth],z * TERRAIN_UNIT_SIZE + m_zOffset, u,v);
-        }
-    }*/
-
     // Figure out which indices make up each triangle
     // By writing out a few of the indicies you can figure out
     // the pattern here. Note there is an offset.
@@ -140,13 +131,6 @@ void Terrain::UpdateHeightMap(int xOffset, int zOffset) {
         }
     }
 
-    // Copy all the data over
-    /*for (unsigned int z = 0; z < m_renderAreaWidth; ++z) {
-        for (unsigned int x = 0; x < m_renderAreaWidth; ++x) {
-            m_heightData[x + (z * m_renderAreaWidth)] = heightData[x + (z * m_renderAreaWidth)];
-        }
-    }*/
-
     delete[] m_heightData;
     m_heightData = heightData;
 }
@@ -159,10 +143,7 @@ int Terrain::ToActualZPosition(int z) {
     return Constants::TERRAIN_UNIT_SIZE * ((m_boxZIndex - 1) * (int)m_boxWidth + z);
 }
 
-// TODO: Instead of re-drawing the terrain at every iteration, do this instead:
-// 1) Create a new function called UpdateHeightMap
-// 2) Move the existing positions in the array by how much the xDelta and yDelta are
-// 3) Update only the cells of the array that need to be updated
+// Called on every iteration of the loop
 void Terrain::MoveCamera(int x, int z) {
     int boxXIndex = x >= 0 ? x / Constants::TERRAIN_UNIT_SIZE / m_boxWidth : x / Constants::TERRAIN_UNIT_SIZE / m_boxWidth - 1;
     int boxZIndex = z >= 0 ? z / Constants::TERRAIN_UNIT_SIZE / m_boxWidth : z / Constants::TERRAIN_UNIT_SIZE / m_boxWidth - 1;
@@ -182,10 +163,10 @@ void Terrain::MoveCamera(int x, int z) {
     }
 }
 
-void Terrain::LoadTextures(std::string colormap, std::string detailmap){
+void Terrain::LoadTextures(std::string colormap){
         // Load our actual textures
         m_textureDiffuse.LoadTexture(colormap); // Found in object
-        m_detailMap.LoadTexture(detailmap);     // Found in object
+        //m_textureDiffuse.SetTile(true);
 }
 
 // Code inspired by this handy demonstration:
