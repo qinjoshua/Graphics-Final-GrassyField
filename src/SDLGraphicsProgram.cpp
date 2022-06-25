@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <SkyBox.hpp>
 
 // Initialization function
 // Returns a true or false value based on successful completion of setup.
@@ -86,9 +87,16 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     // Create a renderer
     std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(m_width,m_height);    
 
+    // Create our skybox
+    std::shared_ptr<SkyBox> sky = std::make_shared<SkyBox>();
+    sky->LoadTexture("./assets/textures/skybox/");
+
     // Create our terrain
     std::shared_ptr<Terrain> myTerrain = std::make_shared<Terrain>(Constants::TERRAIN_BOX_SIZE,"./assets/textures/terrain2.ppm");
     myTerrain->LoadTextures("./assets/textures/colormap.ppm","./assets/textures/detailmap.ppm");
+
+    std::shared_ptr<SceneNode> skyNode;
+    skyNode = std::make_shared<SceneNode>(sky, "./shaders/skyboxVert.glsl", "./shaders/skyboxFrag.glsl");
 
     // Create a node for our terrain 
     std::shared_ptr<SceneNode> terrainNode;
@@ -96,10 +104,13 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
 
     // Set our SceneTree up
     renderer->setRoot(terrainNode);
+    terrainNode->AddChild(skyNode.get());
 
     // Set a default position for our camera
     float initialEyesYPOS = myTerrain->ComputeHeight(Constants::PLAYER_START_X_POS, Constants::PLAYER_START_Z_POS);
     renderer->GetCamera(0)->SetCameraEyePosition(Constants::PLAYER_START_X_POS,initialEyesYPOS + Constants::EYES_HEIGHT, Constants::PLAYER_START_Z_POS);
+  
+  
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
     bool quit = false;
@@ -250,12 +261,38 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         std::cout << renderer->GetCamera(0)->GetEyeXPosition() << " " << renderer->GetCamera(0)->GetEyeZPosition() << std::endl;
 
         // Update the terrain based on the camera location
-        myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
+        //myTerrain->MoveCamera(renderer->GetCamera(0)->GetEyeXPosition(), renderer->GetCamera(0)->GetEyeZPosition());
 
         // Update our scene through our renderer
         renderer->Update();
         // Render our scene using our selected renderer
         renderer->Render();
+
+        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        
+        /*std::shared_ptr<Shader> skyboxShader = std::make_shared<Shader>();
+
+        // Create shader
+        skyboxShader = std::make_shared<Shader>();
+        // Setup shaders for the node.
+        std::string vertexShader = skyboxShader->LoadShader(vertShader);
+        std::string fragmentShader = skyboxShader->LoadShader(fragShader);
+
+        // Actually create our shader
+        m_shader->CreateShader(vertexShader, fragmentShader);
+
+        skyboxShader->Bind();
+        view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+        skyboxShader.setMat4("view", view);
+        skyboxShader.setMat4("projection", projection);
+        // skybox cube
+        glBindVertexArray(skyboxVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS);*/
+
         // Delay to slow things down just a bit!
         SDL_Delay(25);  // TODO: You can change this or implement a frame
                         // independent movement method if you like.

@@ -30,4 +30,6 @@ public:
 	static /*const*/ inline int SPACE_WIDTH = 256;
 };
 
+static const float BOX_SIZE = 900;
+
 #endif

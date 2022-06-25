@@ -65,49 +65,12 @@ void SceneNode::Draw(){
 void SceneNode::Update(glm::mat4 projectionMatrix, Camera* camera){
     if(m_object!=nullptr){
         // TODO: Implement here!
-    
         m_object->Bind();
     	// Now apply our shader 
-		m_shader->Bind();
+		//m_shader->Bind();
     	// Set the uniforms in our current shader
 
-        // For our object, we apply the texture in the following way
-        // Note that we set the value to 0, because we have bound
-        // our texture to slot 0.
-        m_shader->SetUniform1i("u_DiffuseMap",0);  
-        // TODO: This assumes every SceneNode is a 'Terrain' so this shader setup code
-        //       needs to be moved preferably to 'Object' or 'Terrain'
-        m_shader->SetUniform1i("u_DetailMap",1);  
-        // Set the MVP Matrix for our object
-        // Send it into our shader
-        m_shader->SetUniformMatrix4fv("model", &m_worldTransform.GetInternalMatrix()[0][0]);
-        m_shader->SetUniformMatrix4fv("view", &camera->GetWorldToViewmatrix()[0][0]);
-        m_shader->SetUniformMatrix4fv("projection", &projectionMatrix[0][0]);
-
-        // Create a 'light'
-        // Create a first 'light'
-        m_shader->SetUniform3f("pointLights[0].lightColor",1.0f,1.0f,1.0f);
-        m_shader->SetUniform3f("pointLights[0].lightPos",
-           camera->GetEyeXPosition() + camera->GetViewXDirection(),
-           camera->GetEyeYPosition() + camera->GetViewYDirection(),
-           camera->GetEyeZPosition() + camera->GetViewZDirection());
-        m_shader->SetUniform1f("pointLights[0].ambientIntensity",0.9f);
-        m_shader->SetUniform1f("pointLights[0].specularStrength",0.5f);
-        m_shader->SetUniform1f("pointLights[0].constant",1.0f);
-        m_shader->SetUniform1f("pointLights[0].linear",0.003f);
-        m_shader->SetUniform1f("pointLights[0].quadratic",0.0f);
-		
-		// Create a second light
-        m_shader->SetUniform3f("pointLights[1].lightColor",1.0f,0.0f,0.0f);
-        m_shader->SetUniform3f("pointLights[1].lightPos",
-           camera->GetEyeXPosition() + camera->GetViewXDirection(),
-           camera->GetEyeYPosition() + camera->GetViewYDirection(),
-           camera->GetEyeZPosition() + camera->GetViewZDirection());
-        m_shader->SetUniform1f("pointLights[1].ambientIntensity",0.9f);
-        m_shader->SetUniform1f("pointLights[1].specularStrength",0.5f);
-        m_shader->SetUniform1f("pointLights[1].constant",1.0f);
-        m_shader->SetUniform1f("pointLights[1].linear",0.09f);
-        m_shader->SetUniform1f("pointLights[1].quadratic",0.032f);
+        m_object->UpdateShader(m_shader.get(), projectionMatrix, camera, m_worldTransform);
 
 	
 		// Iterate through all of the children
