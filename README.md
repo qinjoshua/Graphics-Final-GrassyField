@@ -4,6 +4,8 @@ By Adam Belfki and Joshua Qin
 ## Overview
 This project uses SDL and OpenGL to render an infinite expanse of rolling grass-textured hills, generated procedurally using Perlin noise. Our project was inspired by "Bliss", the default wallpaper for Windows XP and the most viewed photograph in the world. This was the final project deliverable for Northeastern's CS 4300/5310 summer 2022 class on Computer Graphics.
 
+![](./assets/grassy-field.png)
+
 ## Technical Accomplishments
 In addition to using the principles of lighting, triangle strip terrain generation, coloring, and texturing, we also applied some concepts new to the class, such as procedural terrain generation and the skybox.
 
@@ -30,12 +32,8 @@ The SkyBox is a giant cube that is drawn around the entire visible world. This c
 
 Implementing the skybox was particularly difficult, because it required rendering through multiple shaders as well as modifying many of the abstractions in the starter code to work with the unconventional object.
 
-TODO: Adam add comments
-
 ### First-Person Walking Mode
 In order for users to truly appreciate grassy hill, we decided to create a first-person mode where the y position of the camera would be locked to a certain distance above the y position of the terrain at any given point.
-
-TODO: Adam add comments
 
 ## Challenges
 We faced a lot of challenges.
